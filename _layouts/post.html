@@ -1,0 +1,35 @@
+---
+layout: default
+---
+<article class="post">
+	<div class="post-content">
+		<header>
+			<div class="icon"></div>
+			<time datetime="{{ post.date | date:"%Y-%m-%d" }}">
+				<a href="{{ page.url }}">
+					{{ page.date | date:"%Y/%m/%d" }}
+				</a>
+			</time>
+			<h1 class="title">
+				<a href="{{ page.url }}">
+					{{ page.title }}
+				</a>
+			</h1>
+		</header>
+		<div class="entry">
+			<p>
+				{{ content }}
+			</p>
+		</div>
+		<footer>
+			{% if page.tags != empty %}
+				<div class="tags">
+					{% for tag in page.tags %}
+						<a href="/tags/#{{tag | cgi}}">{{ tag }}</a>
+					{% endfor %}
+					{% if forloop.last == false %}, {%endif %}
+				</div>
+			{% endif %}
+		</footer>
+	</div>
+</article>
