@@ -33,7 +33,28 @@
 		<div id="main-col" class="alignleft">
 			<div id="wrapper">
 				{{ content }}
+				<nav id="pagination">
+					{% if paginator.previous_page %}
+						{% if paginator.previous_page == 1 %}
+							<a href="/" class="alignleft prev">Prev</a>
+						{% else %}
+							<a href="/page/{{paginator.previous_page}}" class="alignleft prev">Prev</a>
+						{% endif %}
+					{% endif %}
+					{% if paginator.next_page %}
+						<a href="/page/{{paginator.next_page}}" class="alignright next">Next</a>
+					{% endif %}
+					<div class="clearfix"></div>
+				</nav>
 			</div>
+			{% if page.title %}
+				<section id="comment">
+					<h1 class="title">Comments</h1>
+					<div style="width:100%">
+						<div id="gpluscomments"></div>
+					</div>
+				</section>
+			{% endif %}
 		</div>
 		<aside id="sidebar" class="alignright">
 			<div class="search">
@@ -57,12 +78,6 @@
 			</div>
 		</aside>
 		<div class="clearfix"></div>
-		<g:comments 
-			href="window.location"; 
-			width="100%"; 
-			first_party_property="BLOGGER" 
-			view_type="FILTERED_POSTMOD">
-		</g:comments>
 	</div>
 	<footer id="footer" class="inner">
 		<div class="alignleft">&copy; 2013 Bacon</div>
@@ -79,5 +94,14 @@
 		})(jQuery);
 	</script>
 	<script src="https://apis.google.com/js/plusone.js">{lang: 'zh-TW'}</script>
+	<script>
+	var g_width = $('#gpluscomments').width('100%').width();
+	gapi.comments.render('gpluscomments', {
+		href: '{{ site.url }}{{ page.url }}', 
+		first_party_property: 'BLOGGER',
+		view_type: 'FILTERED_POSTMOD',
+		width: g_width
+	});
+	</script>
 </body>
 </html>
