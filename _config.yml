@@ -43,7 +43,7 @@ permalink:   /:year/:month/:title/
 #     coderay_bold_every: 10
 #     coderay_css: style
 
-paginate:         1
+paginate:         10
 paginate_path:    /page/:num
 
 title:            Baconrad
