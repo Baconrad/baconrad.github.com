@@ -8,7 +8,7 @@ published: true
 ![prose][hero_image]  
 總算用 [Github][Github] + [Jekyll][Jekyll] 架了個 Blog.  
 印象中這域名年初就買了，不過卻拖到今天才開始用...  
-雖然遲了點，但也算是一個開始！  
+雖然遲了點，但至少是一個開始！  
 
 <!--break-->
 這 blog 的主題是在 [Zespia][Zespia] 發現的，覺得很好看！  
