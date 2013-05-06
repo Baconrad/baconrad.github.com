@@ -2,8 +2,10 @@
 layout: post
 title: 標題什麼的總是很難想
 tags : [other]
+published: false
 ---
 
+![prose][hero_image]  
 總算用 [Github][Github] + [Jekyll][Jekyll] 架了個 Blog.  
 印象中這域名年初就買了，不過卻拖到今天才開始用...  
 雖然遲了點，但也算是一個開始！  
@@ -19,6 +21,8 @@ tags : [other]
 話說我 Blog 總是關了又開...開了又關的...  
 沒辦法，每過一陣子回去看之前自己寫的文章都會覺得當時的自己很蠢，  
 希望這次能堅持久一點。
+
+[hero_image]: http://i.minus.com/iDfeA2wL6pNtt.png (Optional)
 
 [Github]: https://github.com   (Github)
 [Jekyll]: http://jekyllrb.com/ (Jekyll • Simple, blog-aware, static sites)
