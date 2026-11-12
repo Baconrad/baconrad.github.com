@@ -3,387 +3,711 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#11151c">
-<title>PoE 3.30｜輿圖機制 × Threads × Atlas 差異查詢</title>
+<meta name="theme-color" content="#10151d">
+<title>PoE 3.30｜舊聖甲蟲 × 新輿圖天賦完整對照</title>
 <style>
-:root{
-  --bg:#10141b;--panel:#191f29;--panel2:#202936;--line:#303b49;
-  --text:#e8edf3;--muted:#a4afbd;--gold:#d7ad63;--gold2:#f0ce8c;
-  --green:#82c79b;--red:#e18a83;--blue:#83b8df;--purple:#b49add;
-  --shadow:0 14px 36px rgba(0,0,0,.28)
-}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 50% -20%,#27303d 0,#141a23 42%,var(--bg) 78%);color:var(--text);font:15px/1.65 system-ui,-apple-system,"Segoe UI","Microsoft JhengHei",sans-serif}
-button,input{font:inherit}
-a{color:var(--gold2)}
-.top{padding:30px 22px 24px;border-bottom:1px solid var(--line);background:linear-gradient(120deg,rgba(215,173,99,.10),transparent 55%)}
-.wrap{max-width:1400px;margin:auto}
-.eyebrow{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
-h1{font-size:clamp(25px,4vw,39px);line-height:1.2;margin:8px 0 10px}
-.subtitle{color:var(--muted);max-width:850px;margin:0}
-.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.pill{border:1px solid #475261;border-radius:999px;padding:4px 10px;color:#c6d0dc;font-size:12px;background:#161d26}
-.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:22px;padding:22px;max-width:1444px;margin:auto}
-.sidebar{align-self:start;position:sticky;top:14px;background:rgba(25,31,41,.92);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);max-height:calc(100vh - 28px);overflow:auto}
-.side-title{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.12em;margin:2px 8px 10px}
-.search{width:100%;padding:11px 12px;border-radius:9px;border:1px solid #465363;background:#10161f;color:var(--text);outline:none;margin-bottom:12px}
-.search:focus{border-color:var(--gold)}
-.nav{display:grid;gap:5px}
-.nav button{display:flex;align-items:center;gap:10px;text-align:left;width:100%;border:1px solid transparent;border-radius:9px;padding:9px 10px;background:transparent;color:#cbd4df;cursor:pointer;transition:.15s}
-.nav button:hover{background:#252f3c}
-.nav button.active{background:linear-gradient(90deg,rgba(215,173,99,.17),rgba(215,173,99,.04));border-color:#80683f;color:#ffe0a5}
-.nav .num{font-size:11px;color:#8290a0;width:20px}
-.nav .count{margin-left:auto;color:#7f8b99;font-size:11px}
-main{min-width:0}
-.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-.stat strong{display:block;font-size:22px;color:var(--gold2)}
-.stat span{color:var(--muted);font-size:12px}
-.notice{border:1px solid #6e5b37;background:rgba(215,173,99,.08);border-radius:12px;padding:13px 15px;color:#d9c7a6;margin-bottom:18px;font-size:13px}
-.content{background:rgba(25,31,41,.94);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);overflow:hidden}
-.hero{padding:23px 25px 18px;background:linear-gradient(115deg,rgba(215,173,99,.12),transparent 65%);border-bottom:1px solid var(--line)}
-.hero-top{display:flex;align-items:flex-start;gap:14px}
-.icon{font-size:30px;line-height:1.2}
-h2{font-size:26px;margin:0 0 3px}
-.en{color:var(--muted);font-size:13px}
-.summary{color:#c3ccd7;margin:13px 0 0;max-width:900px}
-.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
-.tag{font-size:11px;padding:3px 8px;border-radius:5px;background:#293441;color:#c4d0dd}
-.tag.good{color:var(--green);background:rgba(130,199,155,.1)}
-.tag.warn{color:var(--gold2);background:rgba(215,173,99,.12)}
-.section{padding:20px 25px;border-bottom:1px solid var(--line)}
-.section:last-child{border:0}
-.section h3{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
-.section h3:before{content:"";width:3px;height:17px;background:var(--gold);border-radius:2px}
-.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
-table{border-collapse:collapse;width:100%;min-width:620px;font-size:13px}
-th{background:#242e3a;color:#e5c98f;text-align:left;font-weight:700}
-th,td{padding:10px 12px;border-bottom:1px solid #303a47;vertical-align:top}
-tr:last-child td{border-bottom:0}
-td:first-child{color:#f0d9ac;font-weight:650;min-width:155px}
-td{color:#cbd4df}
-.diff-table td:nth-child(2){color:#c3ccd7}
-.diff-table td:nth-child(3){color:#c3e0cb}
-.analysis{padding:13px 15px;background:#151c25;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;color:#d3dbe4}
-.analysis p{margin:0}
-.empty{padding:35px;text-align:center;color:var(--muted)}
-.footer{max-width:1400px;margin:0 auto;padding:0 22px 30px;color:#8592a1;font-size:12px}
-.footer a{color:#d5b477}
-@media(max-width:850px){
- .layout{grid-template-columns:1fr;padding:14px}
- .sidebar{position:static;max-height:none}
- .nav{grid-template-columns:repeat(2,minmax(0,1fr))}
- .overview{grid-template-columns:repeat(3,1fr)}
-}
-@media(max-width:560px){
- .top{padding:24px 16px}.layout{padding:12px}
- .overview{grid-template-columns:1fr 1fr}
- .overview .stat:last-child{grid-column:span 2}
- .hero,.section{padding:17px}
- .nav{grid-template-columns:1fr 1fr}
- .nav button{font-size:13px;padding:8px}
- h2{font-size:22px}
-}
+:root{color-scheme:dark;--bg:#0d1219;--panel:#151d28;--panel2:#1c2735;--line:#344253;--text:#e8edf4;--muted:#aab6c5;--gold:#f0cb83;--green:#9bd4ad;--blue:#9bc9f2;--red:#f1a39b;--purple:#c7afea;--shadow:0 18px 44px rgba(0,0,0,.28)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -18%,#263446 0,#121a25 44%,var(--bg) 80%);color:var(--text);font:15px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:#f4d594}button,input{font:inherit}.top{padding:30px 22px 24px;border-bottom:1px solid var(--line);background:linear-gradient(120deg,rgba(240,203,131,.10),transparent 58%)}.wrap{max-width:1500px;margin:auto}.eyebrow{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}h1{font-size:clamp(26px,4vw,40px);line-height:1.18;margin:8px 0 10px}.subtitle{color:var(--muted);max-width:980px;margin:0}.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.pill{border:1px solid #526174;border-radius:999px;padding:4px 10px;color:#d4deea;font-size:12px;background:#151e29}.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;padding:20px;max-width:1540px;margin:auto}.sidebar{align-self:start;position:sticky;top:12px;background:rgba(21,29,40,.96);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);max-height:calc(100vh - 24px);overflow:auto}.side-title{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.12em;margin:2px 8px 10px}.search{width:100%;padding:11px 12px;border-radius:9px;border:1px solid #526174;background:#0d141d;color:var(--text);outline:none;margin-bottom:10px}.search:focus{border-color:var(--gold)}.filter-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.filter{border:1px solid #465568;background:#17212e;border-radius:7px;padding:5px 8px;color:#c8d3e0;font-size:11px;cursor:pointer}.filter.active{border-color:#a8874e;color:#ffe0a7;background:#352b1d}.nav{display:grid;gap:4px}.nav button{display:flex;align-items:center;gap:9px;text-align:left;width:100%;border:1px solid transparent;border-radius:8px;padding:8px 9px;background:transparent;color:#cbd5e0;cursor:pointer}.nav button:hover{background:#222e3d}.nav button.active{background:linear-gradient(90deg,rgba(240,203,131,.16),rgba(240,203,131,.035));border-color:#806a45;color:#ffe2a9}.nav .num{font-size:10px;color:#8492a3;width:20px}.nav .count{margin-left:auto;color:#8492a3;font-size:10px;white-space:nowrap}.nav .status-dot{width:6px;height:6px;border-radius:50%;background:#7894ae;flex:none}.nav .status-dot.primary{background:#d5aa62}.nav .status-dot.secondary{background:#8abf9b}.nav .status-dot.tertiary{background:#b8a2e1}.nav .status-dot.removed{background:#8c96a2}.nav .status-dot.generic{background:#9bc9f2}main{min-width:0}.overview{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px 14px}.stat strong{display:block;font-size:21px;color:var(--gold)}.stat span{font-size:12px;color:var(--muted)}.framework{border:1px solid var(--line);background:rgba(21,29,40,.94);border-radius:13px;margin-bottom:15px;overflow:hidden}.framework-head{padding:15px 18px;border-bottom:1px solid var(--line);background:#1b2634}.framework-head h2{font-size:18px;margin:0}.framework-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}.framework-item{padding:13px 16px;border-bottom:1px solid #2b3848}.framework-item:nth-child(odd){border-right:1px solid #2b3848}.framework-item h3{font-size:13px;margin:0 0 5px;color:var(--gold)}.framework-item p{font-size:12px;color:#c3cdda;margin:0}.method{padding:12px 16px;background:#111923;color:#aebaca;font-size:12px}.content{background:rgba(21,29,40,.96);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);overflow:hidden}.hero{padding:22px 24px 18px;background:linear-gradient(115deg,rgba(240,203,131,.12),transparent 65%);border-bottom:1px solid var(--line)}.hero-top{display:flex;align-items:flex-start;gap:14px}.hero-icon{font-size:28px;line-height:1.25}.hero h2{font-size:25px;margin:0 0 1px}.en{color:var(--muted);font-size:13px}.summary{color:#cbd5e0;margin:12px 0 0;max-width:1000px}.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.tag{font-size:11px;padding:3px 8px;border-radius:6px;background:#293647;color:#d3deea}.tag.primary{color:#ffe1a7;background:rgba(215,170,98,.14)}.tag.secondary{color:var(--green);background:rgba(140,196,156,.12)}.tag.tertiary{color:var(--purple);background:rgba(183,158,224,.13)}.tag.removed{color:#bec8d3;background:rgba(150,162,178,.12)}.tag.generic{color:var(--blue);background:rgba(155,201,242,.12)}.section{padding:19px 23px;border-bottom:1px solid var(--line)}.section:last-child{border:0}.section h3{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px}.section h3:before{content:"";width:3px;height:17px;background:var(--gold);border-radius:2px}.section-desc{font-size:12px;color:var(--muted);margin:-4px 0 10px}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px}table{border-collapse:collapse;width:100%;min-width:680px;font-size:12.5px}th{background:#263344;color:#f0d49d;text-align:left;font-weight:700}th,td{padding:10px 11px;border-bottom:1px solid #334153;vertical-align:top}tr:last-child td{border-bottom:0}td:first-child{color:#f0d9ac;font-weight:650;min-width:175px}td{color:#d0d9e3}.node-table td:nth-child(2){color:#a9c9e8;white-space:nowrap;min-width:92px}.diff-table td:nth-child(2){color:#bdc7d3}.diff-table td:nth-child(3){color:#c3e4cd}.diff-table td:nth-child(4){color:#f2cd8d;min-width:126px}.analysis{padding:13px 15px;background:#111923;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;color:#d2dce6;font-size:13px}.analysis p{margin:0}.threadbox{padding:13px 15px;border:1px solid #3e556d;background:#152231;border-radius:8px;color:#cbd9e7;font-size:13px}.empty{padding:34px;text-align:center;color:var(--muted)}.footer{max-width:1500px;margin:0 auto;padding:0 20px 28px;color:#8593a3;font-size:12px}.footer a{color:#e2c185}.footer p{margin:5px 0}.legend{display:flex;flex-wrap:wrap;gap:9px;padding:10px 0 0;color:#aebaca;font-size:11px}.legend span{display:flex;align-items:center;gap:5px}.legend i{width:7px;height:7px;border-radius:50%;display:inline-block}.source-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:7px}.source-list a{display:inline-block;border:1px solid #465568;border-radius:7px;padding:5px 9px;text-decoration:none;font-size:11px;background:#182331}.source-list a:hover{border-color:#a8874e}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.sidebar{position:static;max-height:none}.nav{grid-template-columns:repeat(2,minmax(0,1fr))}.overview{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.top{padding:23px 15px}.layout{padding:11px}.hero,.section{padding:16px}.framework-grid{grid-template-columns:1fr}.framework-item:nth-child(odd){border-right:0}.nav{grid-template-columns:1fr 1fr}.nav button{font-size:12px;padding:7px 8px}.nav .count{display:none}.hero h2{font-size:21px}.overview{gap:7px}.stat{padding:10px}.stat strong{font-size:19px}}
+.reference-drawers{margin:18px 0 20px;padding:15px 16px;border:1px solid var(--line);border-radius:13px;background:rgba(21,29,40,.92)}
+.reference-drawers>h2{font-size:16px;margin:0 0 4px;color:var(--gold)}
+.reference-intro{margin:0 0 12px;color:var(--muted);font-size:12px}
+.reference-drawers details{border:1px solid #344255;border-radius:9px;background:#151f2b;margin-top:8px;overflow:hidden}
+.reference-drawers summary{cursor:pointer;list-style:none;padding:11px 13px;color:#e6d1a8;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between}
+.reference-drawers summary::-webkit-details-marker{display:none}
+.reference-drawers summary:after{content:"＋";color:var(--gold);font-size:16px}
+.reference-drawers details[open] summary:after{content:"－"}
+@media(max-width:650px){.reference-drawers{padding:12px}.reference-drawers summary{font-size:12px}}
 </style>
 </head>
 <body>
-<header class="top">
- <div class="wrap">
-  <div class="eyebrow">Path of Exile · Atlas Update 3.30 · Covens of Umbra</div>
-  <h1>輿圖機制 × Threads × Atlas 差異查詢</h1>
-  <p class="subtitle">3.30 已移除 Scarab 聖甲蟲，改以 Threads 添加機制，並重做輿圖天賦樹。本頁以 <b>PoEDB 繁體中文（TW）</b> 頁面為翻譯基準，聖甲蟲名稱貼近繁中資料庫實際寫法，不確定或版本差異以「中文(英文)」並列。</p>
-  <div class="meta"><span class="pill">繁體中文（TW）</span><span class="pill">翻譯基準：poedb.tw/tw</span><span class="pill">專有名詞中英並列</span></div>
- </div>
-</header>
+<header class="top"><div class="wrap">
+ <div class="eyebrow">Path of Exile · Atlas Update 3.30 · Covens of Umbra</div>
+ <h1>3.30 舊聖甲蟲 × 輿圖天賦完整差異表</h1>
+ <p class="subtitle">舊聖甲蟲依 PoEDB 繁中資料；3.30 輿圖天賦依本次提供的 atlas_nodes。核心天賦與關鍵天賦逐條列出；普通天賦以名稱＋效果聚合顯示次數，避免幾十列重複。缺少效果文字或含控制字元的節點保留標記，不補猜。</p>
+ <div class="meta"><span class="pill">繁體中文</span><span class="pill">舊聖甲蟲：PoEDB 繁中</span><span class="pill">新天賦：</span><span class="pill">核心／關鍵天賦逐條；普通天賦聚合</span></div>
+</div></header>
 <div class="layout">
  <aside class="sidebar">
   <div class="side-title">機制列表 / MECHANICS</div>
-  <input id="search" class="search" type="search" placeholder="搜尋機制或效果…（例：複製、首領）" autocomplete="off">
+  <input id="search" class="search" type="search" placeholder="搜尋機制、天賦、節點或數值…" autocomplete="off">
+  <div class="filter-row" id="filters">
+   <button class="filter active" data-filter="all">全部</button><button class="filter" data-filter="primary">綢帶機制</button><button class="filter" data-filter="secondary">次要機制</button><button class="filter" data-filter="tertiary">第三類</button><button class="filter" data-filter="removed">天賦群移除</button><button class="filter" data-filter="generic">一般地圖投資</button>
+  </div>
   <nav id="nav" class="nav" aria-label="機制列表"></nav>
+  <div class="legend"><span><i style="background:#d5aa62"></i>主要綢帶</span><span><i style="background:#8abf9b"></i>次要機制</span><span><i style="background:#b8a2e1"></i>第三類</span><span><i style="background:#8c96a2"></i>移除投資群</span><span><i style="background:#9bc9f2"></i>一般地圖投資</span></div>
  </aside>
  <main>
   <div class="overview">
-   <div class="stat"><strong id="mechanicCount">20</strong><span>可查詢機制</span></div>
-   <div class="stat"><strong>3 欄對照</strong><span>舊版 Scarab / 3.30 方向 / 差異</span></div>
-   <div class="stat"><strong>3.30</strong><span>目標版本</span></div>
+   <div class="stat"><strong id="mechanicCount">0</strong><span>可查詢機制</span></div>
+   <div class="stat"><strong>10 種</strong><span>主要聯盟綢帶</span></div>
+   <div class="stat"><strong>8 個</strong><span>每張地圖綢帶使用上限</span></div>
+   <div class="stat"><strong>3 類</strong><span>主要／次要／第三類投資</span></div>
   </div>
   <div id="content" class="content" aria-live="polite"></div>
  </main>
 </div>
-<div class="footer">
- <p>參考資料：<a href="https://poedb.tw/tw/Scarab" target="_blank" rel="noopener">PoEDB Scarab（繁體中文 TW）</a> · <a href="https://poedb.tw/us/Scarab" target="_blank" rel="noopener">PoEDB Scarab（英文）</a> · <a href="https://poedb.tw/us/atlas-skill-tree/" target="_blank" rel="noopener">PoEDB 3.30 Atlas Skill Tree</a></p>
- <p>翻譯原則：機制名稱與聖甲蟲變體優先採用 <code>poedb.tw/tw</code> 實際標題；無法確認時以「中文(英文)」並列，不以簡中譯名替代繁中譯名。</p>
-</div>
+<footer class="footer">
+ <section class="reference-drawers" aria-label="補充資料與資料完整性說明">
+  <h2>補充資料與資料完整性</h2>
+  <p class="reference-intro">以下內容不屬於單一機制的比較結果，已移至頁面底部並預設收合。</p>
+  <details><summary>3.30 系統差異與分類說明</summary>
+   <section class="framework">
+   <div class="framework-head"><h2>先釐清 3.30 的系統差異</h2></div>
+   <div class="framework-grid">
+    <div class="framework-item"><h3>主要聯盟機制：綢帶加入</h3><p id="intro-primary"></p></div>
+    <div class="framework-item"><h3>次要聯盟機制：Atlas 節點投資</h3><p id="intro-secondary"></p></div>
+    <div class="framework-item"><h3>第三類機制：自然出現率</h3><p id="intro-tertiary"></p></div>
+    <div class="framework-item"><h3>掘獄／劫盜：專屬天賦群移除</h3><p id="intro-removed"></p></div>
+    <div class="framework-item"><h3>命運卡／制圖：一般地圖投資</h3><p id="intro-generic"></p></div>
+   </div>
+   <div class="method" id="intro-method"></div>
+  </section>
+  </details>
+  <details>
+   <section class="framework">
+   <div class="method">附件中部分節點效果為空，包括：秘密揭露、現實繫繩、惡性詞綴、血仇、卡爾葛之誼、可控混亂、黑暗瀰漫。部分節點字串含控制字元 <code>\u0002</code>（例如部落永續、黑暗崛起、竄改預言），本頁以「[控制字元]」標示，不自行補字。</div>
+  </section>
+  </details>
+ </section>
+</footer>
 <script>
+const intro = {"patch":"依 PoEDB「版本更新 3.30.0 — 巫影密會」：聖甲蟲從遊戲中移除，由「綢帶（Threads）」取代； 中「絲線」即為同一系統。","primary":"10 種主要聯盟機制：深淵、獸獵、反叛、凋落、裂痕、探險、穿越、戰亂、祭祀、通牒。以綢帶加入。","secondary":"次要聯盟機制：精髓、豐收、傭兵、礦床、盜賊流亡者、神殿、保險箱、苦痛。由輿圖節點調整。","tertiary":"第三類機制：超越、埋藏哨兵、譫妄之鏡、遠古蜃景、翠綠荒林。只提高自然出現機率。","removed":"掘獄與劫盜專屬輿圖天賦群移除；玩法本體仍在，遭遇來源改為指定地圖。","generic":"命運卡、制圖、灼烙總督、吞噬天地、輿圖異常、輿圖記憶、金幣、傳奇怪物、帝王迷宮等屬一般地圖投資。","method":"表格中舊聖甲蟲依 PoEDB /tw/Scarab；3.30 節點。核心天賦與關鍵天賦逐條列出；普通天賦以名稱＋效果聚合顯示次數。 缺效果或含控制字元保留標記。"};
+
+/* =========================================================================
+   3.30 Atlas 節點資料（依 整理；核心／關鍵天賦逐條，普通天賦聚合）
+   ========================================================================= */
+const ATLAS330 = {
+  abyss:{keystones:[],notables:[
+    {n:"地底寶藏",e:"你地圖中的深淵可以生成深淵織網而不是深淵寶庫；你地圖中的深淵坑洞加倍擁有獎勵的機率"},
+    {n:"無光裂谷",e:"你地圖中的深淵裂谷根據每個餵養的靈魂，增加 150% 生成怪物量"},
+    {n:"深井僕從",e:"你地圖中的深淵坑洞有 10% 機率被 5 個額外稀有怪物守衛"},
+    {n:"深淵大軍",e:"你地圖中的深淵怪物增加 50% 經驗；你地圖中的深淵增加 20% 怪物生成"},
+    {n:"部落永續",e:"你地圖中的[控制字元]有 25% 機率含有 3 個額外坑洞；你地圖中的[控制字元]會重骰坑洞數量兩次，並取最高值"},
+    {n:"黑暗崛起",e:"你地圖中的深淵坑洞有 8% 機率根據每一先前已關閉的坑洞使生成的所有怪物至少為魔法；你地圖中的[控制字元]會根據該深淵每個先前已關閉的坑洞，增加 4% 生成怪物量"},
+    {n:"反應蟲群",e:"你地圖中非最終的深淵坑洞在關閉時產生 1 個深淵水晶"},
+    {n:"覺醒深度",e:"你地圖中的深淵增加 100% 機率引導至絕望深淵"},
+    {n:"黑暗瀰漫",e:"（未提供效果）"}
+  ],normals:[
+    ["深淵額外坑洞機率","你地圖中的深淵有 15% 超量機率含有 1 個額外坑洞",9],
+    ["深淵稀有怪物","深淵坑洞會有 1 個額外稀有怪物守衛",5],
+    ["深淵怪物數量","你地圖中的深淵增加 8% 怪物生成",4],
+    ["深淵怪物稀有度","你地圖中的深淵怪物增加 8% 物品稀有度",3],
+    ["深淵珠寶機率","增加 15% 你地圖中找到的深淵珠寶數量",2],
+    ["深淵深處機率","你地圖中的深淵增加 20% 機率引導至絕望深淵",2]
+  ]},
+  bestiary:{keystones:[],notables:[
+    {n:"狩獵場",e:"你地圖中的紅色野獸增加 100% 機率來自特定區域；你含有可捕獲野獸的地圖會額外含有 1 隻來自該區域的紅色野獸"},
+    {n:"瀕危物種",e:"你地圖中的野獸有更高機率為罕見的品種"},
+    {n:"終生羈絆",e:"在你的地圖中捕獲的野獸有 20% 機率產生 1 個複製品"}
+  ],normals:[
+    ["紅色野獸機率","你含有可捕獲野獸的地圖有 8% 機率額外含有 1 隻紅色野獸",3],
+    ["紅色野獸成對機率","你地圖中的紅色野獸有 4% 機率成對出現",3]
+  ]},
+  essence:{keystones:[],notables:[
+    {n:"再結晶",e:"你地圖中的禁錮怪物可以額外被汙染 1 次"},
+    {n:"等量汙染",e:"你地圖中對被禁錮的怪物使用瓦爾寶珠時，會將所有精髓替換為該被囚禁怪物所擁有的其中一種精髓"},
+    {n:"強化能量",e:"你地圖中被禁錮的怪物擁有至少 1 個最高可能階級的精髓"},
+    {n:"水晶共振",e:"你階級 16 地圖中的最終地圖頭目根據身上每個精髓詞綴，有 3% 機率掉落 1 張鈣化地圖，最多 15%；根據你地圖中殺死的任何被禁錮的怪物，給予地圖頭目 1 種隨機精髓詞綴"},
+    {n:"水晶格",e:"你地圖中被禁錮的怪物有 15% 機率有 3 個額外精髓"},
+    {n:"海量精華",e:"你的地圖 +60% 超量機率含有 1 個禁錮怪物"},
+    {n:"失態之情",e:"增加 100% 禁錮怪物擁有特定精髓的機率"},
+    {n:"壓抑之情",e:"增加 100% 禁錮怪物擁有特定精髓的機率"},
+    {n:"惡感",e:"增加 100% 禁錮怪物擁有特定精髓的機率"},
+    {n:"埋藏之情",e:"增加 100% 禁錮怪物擁有特定精髓的機率"},
+    {n:"超自然起源",e:"你地圖中的禁錮怪物被附身且他們的召喚物被觸碰；你地圖中的野生盜賊流亡者有 25% 機率被禁錮於精髓中"}
+  ],normals:[
+    ["精髓機率","你的地圖 +25% 超量機率含有 1 個禁錮怪物",13],
+    ["高階精髓機率","你地圖中找到的精髓有 8% 機率高一個階級",3],
+    ["禁錮怪物額外精髓機率","你地圖中被禁錮的怪物有 5% 機率有 1 個額外精髓",5]
+  ]},
+  breach:{keystones:[],notables:[
+    {n:"多線戰場",e:"你地圖中的不穩定裂痕根據每個已開啟的不穩定裂痕，加速 10%；你地圖中來自不穩定裂痕的怪物根據每個已開啟的裂痕，提高難度和獎勵"},
+    {n:"龐然巨力",e:"你含有不穩定裂痕的地圖有 10% 機率含有兩道額外不穩定裂痕；你含有不穩定裂痕的地圖有 5% 機率額外含有 3 個不穩定裂痕；你含有不穩定裂痕的地圖有 1% 機率額外含有 10 個不穩定裂痕"},
+    {n:"暴力衝突",e:"你地圖中的裂痕遭遇加速 20%"},
+    {n:"強護統御",e:"你地圖中的裂痕巢穴增加 60% 通往要塞的機率；你地圖中的裂痕頭目有 25% 機率成對出現"},
+    {n:"艾里絲的挑釁",e:"你地圖中艾里絲的技能改為激怒巢穴，提高後續波次的難度和獎勵"},
+    {n:"長期圍攻",e:"增加 100% 你地圖中艾里絲在不通往要塞的裂痕巢穴中所創造的技能數量；你地圖中的裂痕巢穴有額外 3 波巢裔怪物"},
+    {n:"點燃之火",e:"增加 100% 你地圖中裂痕可燃洞穴的引爆半徑；你地圖中的巢穴遭遇根據每一摧毀的可燃洞穴增加 5% 堅韌；你地圖中的巢穴遭遇根據每一摧毀的可燃洞穴增加 3% 賦予的巢裔之血數量"},
+    {n:"鉗夾敞開",e:"你地圖中的不穩定裂痕在計時條已滿 8 秒後才會崩塌；你地圖中不穩定裂痕在穩定後會生成 2 隻額外稀有怪物"},
+    {n:"肥沃之地",e:"增加 100% 你地圖中找到的胎贈為特定類型的機率"},
+    {n:"無盡繁衍",e:"你地圖中的裂痕頭目有 50% 機率會掉落一個額外的胎贈；你地圖中的貪握之匣增加 50% 含有胎贈的機率"},
+    {n:"各個擊破",e:"你地圖中的裂痕遭遇總是為特定類型"}
+  ],normals:[
+    ["額外不穩定裂痕機率","你含有不穩定裂痕的地圖有 8% 機率含有一道額外不穩定裂痕",5],
+    ["裂痕稀有怪物機率","增加 5% 你地圖中的裂痕生成的稀有怪物數量",2],
+    ["裂痕怪物群大小","你地圖中的裂痕怪物增加 5% 怪物群大小",2],
+    ["裂痕巢裔之血數量","增加 5% 你地圖中找到的巢裔之血數量",3],
+    ["裂痕胎贈數量","增加 8% 你地圖中所找到的胎贈數量",2],
+    ["裂痕胎贈數量","增加 5% 你地圖中所找到的胎贈數量",3],
+    ["裂痕魔法怪物機率","你地圖中的裂痕增加產生 5% 魔法怪物",3],
+    ["艾里絲技能傷害","增加 30% 你地圖中裂痕巢穴裡艾里絲創造的技能傷害",2],
+    ["裂痕可燃洞穴","你地圖中的巢穴增加 20% 可燃洞穴數量",2]
+  ]},
+  expedition:{keystones:[],notables:[
+    {n:"深藏之物",e:"增加 60% 你的地圖中符文怪物掉落探險日誌的數量"},
+    {n:"不入虎穴，焉得虎子",e:"你地圖中找到的日誌總是擁有 4 條固定詞綴；你地圖中的探險怪物根據每個被引爆的遺跡提高難度和獎勵"},
+    {n:"卡爾葛之誼",e:"（未提供效果）"}
+  ],normals:[
+    ["探險符文怪物","你的地圖增加 10% 符文怪物印記的數量",2],
+    ["探險文物數量","增加 8% 你地圖中怪物掉落文物的數量",4],
+    ["探險商人重骰通貨機率","增加 8% 你地圖中怪物掉落刷新商人的通貨數量",1]
+  ]},
+  legion:{keystones:[
+    {n:"永恆鬥爭",e:"你地圖中的戰亂事件沒有計時器；打破處於靜止狀態的怪物和保險箱會導致碎裂；你地圖中的戰亂事件開始於碎裂發生"}
+  ],notables:[
+    {n:"額外補給",e:"你地圖中的每個戰亂含有 1 個額外征戰儲物箱；你地圖中的戰亂保險箱含有 1 個額外隨機獎勵"},
+    {n:"戰利品",e:"你地圖中的戰亂寶箱被打開時，有 25% 機率將其獎勵分散給從靜止中釋放的戰亂怪物；獲得獎勵的戰亂怪物提高難度"},
+    {n:"指揮鏈",e:"你地圖中的戰亂事件含有 4 個額外中士"},
+    {n:"久經沙場",e:"你地圖中擁有獎勵的戰亂怪物有 15% 機率獲得 2 個額外獎勵，若未獲得則有 25% 機率獲得 1 個額外獎勵；你地圖中的戰亂怪物根據它們每個額外獎勵，獲得 50% 更多生命"},
+    {n:"人中之首",e:"增加 50% 你地圖中戰亂將軍掉落的永恆裂片數量；你地圖中有 1 個將軍的戰亂事件有 2 個將軍"},
+    {n:"持久鬥爭",e:"你地圖中的戰亂事件增加 60% 持續時間；你地圖中的戰亂怪物靜止時增加承受 60% 傷害"},
+    {n:"血仇",e:"（未提供效果）"}
+  ],normals:[
+    ["戰亂寶箱裂片機率","你地圖中戰亂寶箱內含的永恆裂片有 6% 機率被複製",3],
+    ["戰亂怪物裂片機率","你地圖中戰亂怪物掉落的永恆裂片有 6% 機率被複製",4],
+    ["戰亂寶箱脫離距離","你地圖中從靜止釋放的戰亂保險箱，增加 20% 其釋放其它怪物和保險箱的範圍",3],
+    ["戰亂中士獎勵機率","你地圖中的戰亂中士有 8% 額外機率有獎勵",3],
+    ["戰亂將軍機率","增加 10% 你地圖中的戰亂遭遇含有一名將軍的機率",5],
+    ["戰亂怪物群大小","你地圖中的戰亂怪物增加 6% 怪物群大小",2],
+    ["戰亂持續時間","你地圖中的戰亂事件增加 20% 持續時間",1]
+  ]},
+  ritual:{keystones:[
+    {n:"武斷原則",e:"你地圖中祭祀神壇的恩賜之物花費，隨機 90% 更少至 80% 更多"}
+  ],notables:[
+    {n:"教條狂熱",e:"你地圖中的祭祀神壇可以同時增加 30% 產生怪物的數量；你地圖中的祭祀神壇產生怪物加速 30%"},
+    {n:"黑暗中的光",e:"你地圖中從祭祀神壇復活的怪物，根據每個已完成的祭祀，有 20% 機率受荒林妖精強化"},
+    {n:"葬禮儀式",e:"增加 50% 你地圖中的祭祀神壇擁有特殊獎勵的機率；你地圖中的祭祀獎勵含有 1 個額外的稀有屍體怪物道具"},
+    {n:"苛刻貢禮",e:"你地圖中從祭祀神壇復活的怪物，獲得貢禮的懲罰減少 10%；你地圖中的傳奇怪物在祭祀神壇被擊殺時，獲得的貢禮增加 100%"},
+    {n:"盲目效忠",e:"你地圖中祭祀神壇的裝備恩賜之物為未鑑定，且可以擁有物品階級"},
+    {n:"血之契約",e:"增加 30% 你地圖中祭祀神壇提供的恩賜之物"},
+    {n:"靈活教條",e:"你地圖中的祭祀神壇可以重骰恩賜之物額外 2 次；你地圖中在祭祀神壇重骰恩賜之物可額外免費 1 次"},
+    {n:"神秘奉獻",e:"你有祭祀神壇的地圖必定有 4 個祭祀神壇"},
+    {n:"獻祭期限",e:"完成你地圖中最後一個祭祀神壇，有 25% 機率掉落 1 個浸血碑器"}
+  ],normals:[
+    ["祭祀貢禮懲罰降低","你地圖中從祭祀神壇復活的怪物，獲得貢禮的懲罰減少 8%",3],
+    ["祭祀獲得貢禮","你地圖中被獻祭至祭祀神壇的怪物，增加 6% 貢禮",6],
+    ["祭祀重骰消耗","你地圖中在祭祀神壇重骰恩賜之物，減少 10% 貢禮消耗",3],
+    ["增加祭祀延遲時間","你地圖中在祭祀神壇延遲恩賜之物，再次出現會加速 25%",2],
+    ["增加祭祀延遲消耗","你地圖中在祭祀神壇延遲恩賜之物，減少 10% 貢禮消耗",3],
+    ["增加祭祀碎片","你地圖中祭祀神壇給予的祭祀碎片，增加 12% 堆疊大小",3]
+  ]},
+  incursion:{keystones:[],notables:[
+    {n:"毀滅建造者",e:"你地圖中的穿越建造者增加 100% 堅韌；你地圖中的穿越建造者被罪魂附身；你地圖中的穿越建造者根據區域中每個已完成的穿越，擁有 1 個額外怪物詞綴"},
+    {n:"瓦爾文物",e:"你有穿越的地圖必定有 4 個穿越"}
+  ],normals:[
+    ["穿越怪物群大小","你地圖中的穿越增加 4% 怪物群大小",5],
+    ["穿越建造者稀有度","你地圖中的穿越建造者增加 20% 物品稀有度",3]
+  ]},
+  betrayal:{keystones:[],notables:[
+    {n:"蛇首",e:"你地圖中的密教成員有 100% 更高機率伴隨他們的首領；你地圖中密教首領掉落 1 個額外隱匿物品"},
+    {n:"強制審問",e:"在你等級 83 以上的地圖中審問密教成員時，有 6% 機率顯現藏身處輿圖異常"},
+    {n:"不朽遺產",e:"你地圖中處決的永生密教成員，有 50% 機率獲得 1 層額外階級"},
+    {n:"無條件釋放",e:"你地圖中被審問的永生密教目標在審問完成時有 30% 機率不損失階級"},
+    {n:"討價還價",e:"增加 200% 你地圖中的永生密教成員提出交涉物品的機率；當與你地圖中的密教成員交涉物品時，掉落 200% 更多物品"},
+    {n:"隱藏側翼",e:"你地圖中的永生密教成員增加 30% 機率會有支援"}
+  ],normals:[
+    ["反叛隱匿物品機率","你地圖中的永生密教成員有 8% 機率掉落 1 個額外隱匿物品",4],
+    ["反叛目標物品稀有度","增加 10% 你地圖中永生密教成員掉落物品的稀有度",7],
+    ["反叛額外階級機率","你地圖中處決的永生密教成員，有 10% 機率獲得 1 層額外階級",2],
+    ["反叛不損失階級機率","你地圖中被審問的永生密教目標在審問完成時有 5% 機率不損失階級",2],
+    ["反叛交涉機率","增加 30% 你地圖中的永生密教成員提出交涉物品的機率",2],
+    ["反叛密教增援機率","你地圖中的永生密教成員增加 8% 機率會有支援",2]
+  ]},
+  blight:{keystones:[
+    {n:"卡西亞的驕傲",e:"你地圖中的凋落怪物，承受 75% 更少來自玩家和他們召喚物的傷害；你地圖中的凋落塔和它們的召喚物，造成 300% 更多傷害"}
+  ],notables:[
+    {n:"菌絲遍布",e:"你地圖中的凋落路線 +15% 超量機率，使凋落事件中每條路線擁有 1 個額外獎勵"},
+    {n:"流行病學",e:"你地圖中 5 個凋落保險箱內含物品的種類很幸運"},
+    {n:"生物載體",e:"你地圖中的凋落保險箱有 60% 更多機率含有凋落地圖；你地圖中找到的凋落地圖有 30% 機率擁有 3 個額外隨機塗油"},
+    {n:"免疫抑制",e:"你地圖中每座強化塔使範圍內的凋落怪物提高難度和獎勵"},
+    {n:"劇毒瘟疫",e:"你地圖中的傳奇凋落頭目增加 50% 生命；你地圖中的凋落事件含有最多 2 個額外凋落頭目"},
+    {n:"猖獗感染",e:"你地圖中凋落怪物產生比平常快 150%；你地圖中凋落事件的路線 +50% 超量機率至少為魔法"},
+    {n:"蔓延脈絡",e:"你地圖中的凋落事件更有可能含有多條路線；你地圖中凋落事件的路線 +50% 超量機率至少為魔法"},
+    {n:"聖堂武僧智慧",e:"你地圖中的凋落塔可以在凋落事件結束後拆解回收"}
+  ],normals:[
+    ["凋落地圖獎勵機率","你地圖中的凋落保險箱有 15% 更多機率含有凋落地圖",2],
+    ["額外凋落寶箱機率","你地圖中凋落事件的路線有 5% 機率有 1 個額外獎勵保險箱",2],
+    ["凋落寶箱額外獎勵機率","凋落保險箱有 8% 機率掉落 1 個額外獎勵",3],
+    ["凋落怪物數量","你地圖中的凋落事件增加 8% 生成非傳奇怪物",2],
+    ["凋落怪物數量","你地圖中的凋落事件增加 6% 生成非傳奇怪物",4],
+    ["凋落怪物稀有度","你地圖中的凋落怪物增加 6% 物品稀有度",1],
+    ["凋落怪物增加承受傷害","你地圖中的凋落怪物增加承受 10% 傷害",2],
+    ["塔消耗","減少 10% 你地圖中建造和升級塔的消耗",3],
+    ["凋落魔法路線機率","你地圖中凋落事件的路線 +10% 超量機率至少為魔法",3],
+    ["頭目路線額外獎勵機率","你地圖中的凋落頭目有 10% 機率為他們的路線增加一個額外獎勵保險箱",3]
+  ]},
+  ultimatum:{keystones:[
+    {n:"毀滅賭注",e:"你地圖中的通牒怪物使用它們特殊能力套用毀滅；到達 7 層毀滅時失敗；你地圖中的通牒怪物和詞綴，造成 50% 更少傷害"}
+  ],notables:[
+    {n:"挑戰高塔",e:"巔峰頭目掉落 10 個隨機催化劑；你地圖中的最後通牒事件，增加 30% 最終回合有 1 個頭目的機率"},
+    {n:"前往烏特薩爾",e:"你地圖中通牒提供的催化劑獎勵有 25% 機率為地圖擁有者替換為最後通牒雕刻獎勵"},
+    {n:"可控混亂",e:"（未提供效果）"}
+  ],normals:[
+    ["通牒頭目機率","你地圖中的最後通牒事件，增加 10% 最終回合有 1 個頭目的機率",3],
+    ["最後通牒雕刻獎勵機率","你地圖中的通牒獎勵，增加 15% 機率為最後通牒雕刻",3],
+    ["通牒怪物數量","你地圖中的通牒事件，增加 8% 產生怪物的數量",2],
+    ["通牒怪物傷害降低","你地圖中的通牒怪物和詞綴減少 10% 傷害",1]
+  ]},
+  harvest:{keystones:[],notables:[
+    {n:"大豐收",e:"你地圖中的神聖動物增加 100% 給予的經驗；你地圖中的神聖植物將荒林妖精散布給增加 30% 的怪物"},
+    {n:"沃土",e:"你地圖中神聖植物上的變動詞綴增加 50% 效果"},
+    {n:"樹木栽培",e:"增加 100% 遭遇特定神聖植物的機率"},
+    {n:"密園呼喚",e:"你的地圖 +40% 超量機率含有神聖植物"},
+    {n:"密園之心",e:"你地圖中的神聖動物增加 50% 機率為頭目；你地圖中的神聖植物不會是普通稀有度"},
+    {n:"倍增期",e:"你地圖中神聖動物掉落的生靈之力有 15% 機率被複製"},
+    {n:"蒼翠大地",e:"你地圖中的神聖動物有 50% 更多生命；你地圖中的神聖動物給予等同於掉落生靈之力 100% 的隨機作物"},
+    {n:"自然的恩惠",e:"你地圖中的神聖植物散布給禁錮怪物的荒林妖精加倍；你地圖中神聖植物散布的荒林妖精優先給予禁錮怪物"}
+  ],normals:[
+    ["神聖植物機率","你的地圖 +15% 超量機率含有神聖植物",11],
+    ["神聖植物妖精數量","增加 10% 你地圖中神聖植物散布的荒林妖精",3],
+    ["額外生靈之力","你地圖中的神聖動物增加 6% 掉落的生靈之力數量",2],
+    ["額外生靈之力","你地圖中的神聖動物增加 4% 掉落的生靈之力數量",1],
+    ["階級 3 怪物機率","你地圖中的神聖動物增加 10% 機率為階級 3 怪物",3],
+    ["神聖動物複製機率","你地圖中的神聖動物有 3% 機率被複製",2]
+  ]},
+  strongbox:{keystones:[],notables:[
+    {n:"探險家的聖物箱",e:"你階級 16 地圖中的保險箱有 10% 機率被替換為天穹裝置"},
+    {n:"瓦爾的秘密",e:"你已汙染地圖中的保險箱有 10% 機率被替換為瓦爾容器；你的地圖中的保險箱已汙染"},
+    {n:"防篡改",e:"你地圖中的保險箱至少為稀有"},
+    {n:"秘密伏擊",e:"你地圖中的保險箱有 14% 機率可再次被開啟"},
+    {n:"預言寶藏",e:"增加 100% 你地圖中的保險箱為特定類型的機率"},
+    {n:"二次誘惑",e:"你的地圖 +60% 超量機率含有 1 個保險箱"},
+    {n:"異國寶庫",e:"你地圖中的保險箱可以擁有含有 1 名傭兵的詞綴；增加 100% 你地圖中的保險箱為傳奇的機率"}
+  ],normals:[
+    ["保險箱機率","你的地圖 +25% 超量機率含有 1 個保險箱",11],
+    ["重新開啟保險箱機率","你地圖中的保險箱有 2% 機率可再次被開啟",3],
+    ["保險箱物品數量","增加 8% 你地圖中保險箱的物品數量",2]
+  ]},
+  shrine:{keystones:[],notables:[
+    {n:"召喚恐懼",e:"你階級 16 地圖中的神殿有 10% 機率被替換為進化神殿"},
+    {n:"崇拜之道",e:"增加 100% 你地圖中的神殿為特定類型的機率"},
+    {n:"鬼火交融",e:"你地圖中的神殿有 25% 機率被罪魂附身"},
+    {n:"偽先知",e:"你的地圖含有 1 座額外的幻影神殿"},
+    {n:"懇求",e:"你的地圖 +60% 超量機率含有 1 座神殿"},
+    {n:"權力泥沼",e:"你地圖中的神殿有 50% 機率被 1 群額外怪物守護；你地圖中的神殿至少被 1 群魔法怪物守護"},
+    {n:"融合",e:"在你的地圖裡，神殿所賦予玩家的增益效果增加 30%；你地圖中的神殿給予 1 個額外隨機神殿效果"}
+  ],normals:[
+    ["神殿機率","你的地圖 +25% 超量機率含有 1 座神殿",13],
+    ["神殿效果","在你的地圖裡，神殿所賦予玩家的增益效果增加 20%",3],
+    ["神殿持續時間","在你的地圖裡，神殿所賦予玩家之增益效果的持續時間增加 25%",2],
+    ["神殿怪物群機率","你地圖中的神殿有 20% 機率被 1 個額外怪物群守衛",2]
+  ]},
+  exiles:{keystones:[],notables:[
+    {n:"騷動",e:"你的地圖有 8% 機率含有 20 個額外盜賊流亡者"},
+    {n:"流亡意志",e:"你地圖中的野生盜賊流亡者被罪魂附身"},
+    {n:"宿敵",e:"你階級 16 地圖中的盜賊流亡者有 10% 機率為卓越"},
+    {n:"意外的合作",e:"你地圖中的野生盜賊流亡者有 20% 機率伴隨 1 名野生傭兵"},
+    {n:"意外陌生人",e:"你的地圖 +60% 超量機率含有 1 個盜賊流亡者"},
+    {n:"忠誠守衛",e:"地圖頭目有 20% 機率伴隨 2 名盜賊流亡者保鑣"}
+  ],normals:[
+    ["盜賊流亡者機率","你的地圖 +25% 超量機率含有 1 個盜賊流亡者",9],
+    ["盜賊流亡者物品稀有度","增加 15% 你地圖中野生盜賊流亡者掉落物品的稀有度",2],
+    ["盜賊流亡者保鑣機率","地圖頭目有 8% 機率伴隨 2 名盜賊流亡者保鑣",2]
+  ]},
+  torment:{keystones:[
+    {n:"死者之言",e:"你地圖中的罪魂可以附身玩家 30 秒；你地圖中的罪魂不能附身怪物"}
+  ],notables:[
+    {n:"靈魂出走",e:"你階級 16 地圖中的罪魂有 10% 機率被替換為苦痛採辦者"},
+    {n:"降神",e:"你每張地圖最多 5 個稀有怪物被附身且他們的召喚物被觸碰"},
+    {n:"無情折磨",e:"地圖頭目有 10% 機率被罪魂圍繞；你地圖中的罪魂有更高機率為罕見的品種"},
+    {n:"驚擾亡者",e:"你地圖中被附身的怪物被擊殺時，罪魂有 10% 機率被釋放並挖出 1 個稀有怪物"},
+    {n:"靈異會議",e:"你的地圖 +60% 超量機率被 1 個罪魂糾纏"},
+    {n:"命中注定的相遇",e:"增加 100% 你的地圖含有特定罪魂的機率"}
+  ],normals:[
+    ["罪魂機率","你的地圖 +25% 超量機率被 1 個罪魂糾纏",13],
+    ["罪魂持續時間","你地圖中的罪魂增加 25% 持續時間",2]
+  ]},
+  beyond:{keystones:[],notables:[
+    {n:"血腥味",e:"你的地圖增加 60% 機率含有 1 個惡魔喚靈者"}
+  ],normals:[
+    ["超越機率","你的地圖增加 20% 機率含有 1 個惡魔喚靈者",4]
+  ]},
+  delirium:{keystones:[],notables:[
+    {n:"陷入癲狂",e:"你的地圖增加 50% 機率含有 1 個譫妄之鏡"}
+  ],normals:[
+    ["譫妄機率","你的地圖增加 20% 機率含有 1 個譫妄之鏡",2]
+  ]},
+  delve:{keystones:[],notables:[],normals:[]},
+  heist:{keystones:[],notables:[],normals:[]},
+  ore:{keystones:[],notables:[
+    {n:"礦物影響",e:"你地圖中守衛礦床的怪物有 50% 機率至少為魔法"},
+    {n:"變質精煉",e:"你地圖中的礦床有 20% 機率含有雙倍礦材；你地圖中的礦床有 20% 機率給予冶煉金屬錠，而不是標記礦材"},
+    {n:"鉍材灌注",e:"在你的地圖中，鉍礦床有 30% 機率對其影響的怪物附加一個詞綴；你地圖中發現的礦床為鉍的機率增加 100%"},
+    {n:"緋紅灌注",e:"在你的地圖中，緋紅鍛鐵礦床會受到 2 個額外汙染生長物看守；你地圖中發現的礦床為緋紅鍛鐵的機率增加 100%"},
+    {n:"山銅灌注",e:"在你的地圖中，山銅礦床所賦予之增益效果的持續時間增加 100%；你地圖中發現的礦床為山銅的機率增加 100%"},
+    {n:"琥珀灌注",e:"在你的地圖中，石化琥珀礦床受到的傷害減少 25%；你地圖中發現的礦床為石化琥珀的機率增加 100%"},
+    {n:"維里西姆灌注",e:"增加 100% 你地圖中維里西姆礦床給予的增益效果持續時間；你地圖中發現的礦床為維里西姆的機率增加 100%"},
+    {n:"幸運的眷顧",e:"在你的地圖中，礦床更可能為稀有種類"},
+    {n:"無處不生礦",e:"你的地圖 +30% 機率含有多個礦床"},
+    {n:"探勘之運",e:"你的地圖 +20% 機率含有礦床"},
+    {n:"輸送耗損",e:"在你的地圖中，有 6% 使礦床替換為遺失貨物"}
+  ],normals:[
+    ["礦床機率","你的地圖 +8% 機率含有礦床",15],
+    ["增加找到的礦材","在你的地圖中，礦床含有的礦材增加 10%",7],
+    ["第二礦床機率","你的地圖 +10% 機率含有多個礦床",2]
+  ]},
+  mercenary:{keystones:[],notables:[
+    {n:"小小封地",e:"你的地圖有 +30% 含有一名傭兵"},
+    {n:"掠奪劫掠",e:"你地圖中找到的傭兵被擊敗時有 10% 機率掉落其所有物品；你地圖中找到的傭兵總是全副武裝"}
+  ],normals:[
+    ["傭兵機率","你的地圖有 +10% 含有一名傭兵",4],
+    ["傭兵額外輔助機率","你地圖中找到的傭兵所裝備的技能有 20% 機率含有一個額外輔助",2],
+    ["傭兵額外掉落物品","你地圖中找到的傭兵被擊敗時會掉落 1 個其未被拿取的物品",2]
+  ]},
+  sentinel:{keystones:[],notables:[
+    {n:"出土構造體",e:"你的地圖增加 50% 機率含有 1 個埋藏哨衛"}
+  ],normals:[
+    ["哨衛機率","你的地圖增加 20% 機率含有 1 個埋藏哨衛",2]
+  ]},
+  mirage:{keystones:[],notables:[
+    {n:"古老流沙",e:"你的地圖增加 50% 機率含有 1 個遠古蜃景"}
+  ],normals:[
+    ["遠古蜃景機率","你的地圖增加 20% 機率含有 1 個遠古蜃景",2]
+  ]},
+  wildwood:{keystones:[],notables:[
+    {n:"神秘之林",e:"你的地圖增加 60% 機率含有翠綠荒林"},
+    {n:"暮光幽谷",e:"你的地圖增加 50% 機率含有翠綠荒林"}
+  ],normals:[
+    ["荒林機率","你的地圖增加 20% 機率含有翠綠荒林",6]
+  ]},
+  divination:{keystones:[],notables:[
+    {n:"臟卜術",e:"你的地圖含有 4 個額外的命運觸碰魔法怪物群"},
+    {n:"竄改預言",e:"你的地圖在完成時有 4% 機率掉落一個[控制字元]（階級 14+）"}
+  ],normals:[
+    ["命運卡機率","增加 6% 你地圖中找到的命運卡數量",2],
+    ["命運卡機率與魔法怪物","增加 3% 地圖中魔法怪物數量；增加 4% 你地圖中找到的命運卡數量",2]
+  ]},
+  cartography:{keystones:[],notables:[
+    {n:"雕塑峽谷",e:"你的地圖有 1 個額外隨機詞綴"},
+    {n:"雕塑天空",e:"增加 10% 地圖中魔法怪物數量；掉落的 1 到 15 階地圖有 15% 機率高 1 階"},
+    {n:"雕塑世界",e:"每張地圖的最終地圖頭目有 5% 機率額外掉落 1 張高一階級的地圖；掉落的 1 到 15 階地圖有 10% 機率高 1 階"},
+    {n:"雕塑山型",e:"增加 10% 地圖中稀有怪物數量；掉落的 1 到 15 階地圖有 15% 機率高 1 階"},
+    {n:"雕塑山型（重複標題）",e:"根據每個變動詞綴，增加 5% 你地圖中找到的地圖數量"},
+    {n:"過去的遺跡",e:"每張地圖的最終地圖頭目有 +3% 機率掉落 1 張尊師守護者地圖（階級 14+）；每張地圖的最終地圖頭目有 +3% 機率掉落 1 張塑界者守護者地圖（階級 14+）"}
+  ],normals:[
+    ["地圖掉落機率","增加 2% 你地圖中掉落的地圖",40],
+    ["高階地圖機率","掉落的 1 到 15 階地圖有 5% 機率高 1 階",9]
+  ]},
+  threads:{keystones:[],notables:[
+    {n:"破碎冠軍",e:"每張地圖的最終地圖頭目有 25% 機率掉落 1 個額外絲線"},
+    {n:"強化文物",e:"你地圖中的稀有怪物根據所受影響的每個怪物詞綴，增加 50% 掉落絲線的機率"},
+    {n:"死靈珠寶",e:"你地圖中的傳奇怪物增加 200% 的機率掉落絲線"},
+    {n:"左旋絲線",e:"增加 200% 你地圖中的絲線為特定類型的機率"},
+    {n:"右旋絲線",e:"增加 200% 你地圖中的絲線為特定類型的機率"},
+    {n:"破舊不堪",e:"你地圖中找到的絲線不會是特定類型"},
+    {n:"抽絲",e:"你地圖中找到的絲線不會是特定類型"},
+    {n:"融合世界",e:"選擇一種內容類型，使其有額外機率生成"},
+    {n:"域外存在",e:"選擇一種內容類型，使其有額外機率生成"},
+    {n:"現實繫繩",e:"（未提供效果）"}
+  ],normals:[
+    ["絲線掉落機率","增加 3% 你地圖中找到的絲線數量",17],
+    ["絲線掉落機率","增加 4% 你地圖中找到的絲線數量",10]
+  ]},
+  searing_exarch:{keystones:[
+    {n:"宇宙之怒",e:"被灼烙總督影響的異能祭壇有 50% 機率有 1 個額外優勢；被灼烙總督影響且有 1 個額外優勢的異能祭壇，增加 100% 劣勢的效果"}
+  ],notables:[
+    {n:"黎明之光",e:"當灼烙總督的勢力第一次出現在你的地圖上時，有 50% 機率產生 1 個灼烙總督祭壇"},
+    {n:"火紋身",e:"你的地圖有 10% 機率獎勵 2 倍灼烙總督事件的進度"},
+    {n:"總督話語",e:"在灼烙總督勢力你的地圖掉落的異能灰燼有 10% 機率被複製；你地圖中被灼烙總督影響的怪物群有 2% 機率含有 1 個額外附身烈焰怨靈"}
+  ],normals:[
+    ["灼烙總督物品機率","你地圖中被灼烙總督影響的怪物有 0.2% 機率掉落有 1 個灼烙總督固定詞綴的物品",5],
+    ["灼烙總督勢力怪物群大小","你地圖中被灼烙總督勢力影響的怪物群增加 5% 怪物群大小",8]
+  ]},
+  eater_of_worlds:{keystones:[
+    {n:"異能凝視",e:"被吞噬天地影響的異能祭壇有 1 個額外劣勢；被吞噬天地影響的異能祭壇增加 50% 優勢效果"}
+  ],notables:[
+    {n:"酸蝕",e:"你的地圖有 10% 機率獎勵 2 倍吞噬天地事件的進度"},
+    {n:"飢餓陰影",e:"增加 20% 機率在你地圖中發現吞噬天地祭壇"},
+    {n:"猖狂生長",e:"在吞噬天地勢力你的地圖掉落的異能靈液有 10% 機率被複製；你地圖中被吞噬天地影響的怪物群有 2% 機率含有 1 個額外觸鬚鞭笞之觸"}
+  ],normals:[
+    ["吞噬天地影響怪物群大小","你地圖中被吞噬天地勢力影響的怪物群增加 5% 怪物群大小",8],
+    ["吞噬天地物品機率","你地圖中吞噬天地影響的怪物有 0.2% 機率掉落有 1 個吞噬天地固定詞綴的物品",5]
+  ]},
+  atlas_anomaly:{keystones:[
+    {n:"幻影異常",e:"輿圖異常改為在完成幻塑界域時顯現，而非在完成地圖時；輿圖異常可從任何象限顯現"}
+  ],notables:[],normals:[
+    ["輿圖異常機率","增加 8% 輿圖異常在你的地圖中顯現的機率",5]
+  ]},
+  atlas_memory:{keystones:[],notables:[
+    {n:"擁抱過去",e:"在你的地圖中所找到之裝備物品的記憶絲縷數量有 50% 機率帶來幸運"},
+    {n:"教育有方",e:"記憶痕跡導向恐懼化身的機率減少 80%"},
+    {n:"念念不忘的關懷",e:"記憶痕跡導向漠視化身的機率減少 80%"},
+    {n:"創傷經歷",e:"記憶痕跡導向恐慌化身的機率減少 80%"}
+  ],normals:[
+    ["地圖物品記憶影響機率","在你的地圖中，掉落地圖具有記憶勢力的機率增加 10%",2],
+    ["裝備物品記憶絲縷機率","在你的地圖中掉落的裝備物品具有記憶絲縷的機率增加 10%",2],
+    ["記憶裂口機率","你的地圖中含有記憶裂口（階級 16 以上）的機率增加 10%",6]
+  ]},
+  currency:{keystones:[],notables:[
+    {n:"鍍金護甲",e:"增加 30% 你地圖中傳奇怪物的堅韌；增加 100% 你地圖中傳奇怪物掉落的金幣"}
+  ],normals:[
+    ["找到金幣","增加 10% 你地圖中找到的金幣堆疊數量",5]
+  ]},
+  unique_monsters:{keystones:[],notables:[
+    {n:"嚴重畸變",e:"根據每 1% 地圖怪物群大小，你地圖中的傳奇怪物增加 1% 傷害；根據每 1% 地圖怪物群大小，你地圖中的傳奇怪物增加 1% 堅韌；根據每 1% 地圖怪物群大小，增加 1% 你地圖中傳奇怪物掉落物品的稀有度"},
+    {n:"真正的恐怖",e:"你地圖中的傳奇怪物有 2 個額外怪物詞綴"}
+  ],normals:[
+    ["傳奇怪物物品稀有度","你地圖中的傳奇怪物增加 6% 物品稀有度",3]
+  ]},
+  labyrinth:{keystones:[],notables:[
+    {n:"榮耀試煉",e:"你地圖中的試煉迷宮有 25% 機率給予優化的女神祭品；你的地圖 +6% 機率含有 1 個昇華試煉"}
+  ],normals:[
+    ["帝王迷宮機率","你的地圖 +3% 機率含有 1 個昇華試煉",3]
+  ]},
+  generic_rare:{keystones:[],notables:[
+    {n:"重影",e:"你每張地圖中有 3 個稀有怪物被複製"},
+    {n:"殘缺倒影",e:"你的地圖含有 3 個額外的鏡像稀有怪物群"},
+    {n:"失序",e:"你地圖中的稀有怪物有 1 個額外詞綴"}
+  ],normals:[
+    ["地圖稀有怪物","增加 5% 地圖中稀有怪物數量",6],
+    ["地圖稀有怪物","增加 3% 地圖中稀有怪物數量",6]
+  ]},
+  generic_magic:{keystones:[],notables:[
+    {n:"團結一致",e:"你地圖中有 4 個怪物群升級為魔法"}
+  ],normals:[
+    ["地圖魔法怪物","增加 3% 地圖中魔法怪物數量",4],
+    ["魔法怪物","增加 5% 地圖中魔法怪物數量",3]
+  ]},
+  extra:{keystones:[
+    {n:"超載電路",e:"你的地圖開啟時有 5 個隨機未配置的輿圖核心天賦"},
+    {n:"創造之泉",e:"你地圖中的怪物造成 25% 更少傷害；你地圖中的怪物有 50% 更多生命"},
+    {n:"毀滅之舞",e:"你地圖中的怪物造成 25% 更多傷害；你地圖中的怪物有 25% 更少生命"},
+    {n:"命運的轉折",e:"你的已汙染稀有地圖在打開時會被隨機調整；因此受影響的地圖會有 1 到 3 個隨機地圖詞綴"},
+    {n:"整體勘探",e:"你地圖中剩餘的怪物少於 50 時，最終地圖頭目受荒林妖精強化"}
+  ],notables:[
+    {n:"侵略性對手",e:"增加 6% 你地圖上變動詞綴的效果；你的地圖所包含的困難和會賦予獎勵的怪物群增加 10%"},
+    {n:"騎乘詞綴",e:"根據每個變動詞綴，增加 2% 你地圖上變動詞綴的效果"},
+    {n:"富裕寄生蟲",e:"地圖頭目死亡時有 50% 機率生成 1 個黃金不穩定體"}
+  ],normals:[
+    ["地圖詞綴效果","增加 2% 你地圖上變動詞綴的效果",5],
+    ["物品稀有度","增加 1% 你地圖中掉落物品的稀有度",6],
+    ["地圖怪物群大小","增加 1% 地圖怪群大小",14],
+    ["傳送門不消耗機率","通往你地圖的傳送門在使用時有 10% 機率不被消耗",2]
+  ]}
+};
+
+/* 原始頁面資料（舊聖甲蟲與差異判讀保留；nodes 會由 ATLAS330 覆蓋） */
 const data = [
-{id:"abyss",name:"深淵",en:"Abyss",icon:"◈",summary:"舊版以額外深淵、怪物數量、深淵絕境(Abyssal Depths)與特殊怪物為主；3.30 深淵透過 Threads 添加，天賦方向涵蓋坑洞成長、深淵絕境機率及特殊獎勵。",old:[
-["深淵聖甲蟲(Abyss Scarab)","區域內含 1 個額外深淵。"],
-["群集之深淵聖甲蟲(Abyss Scarab of Multitudes)","深淵裂縫生成的怪物增加 100%。"],
-["水晶之深淵聖甲蟲(Abyss Scarab of Crystals)","非最後一個深淵坑洞關閉時產生深淵水晶(Abyssal Crystal)。"],
-["落降之深淵聖甲蟲(Abyss Scarab of Descending)","區域內含 1 個無盡深淵(Abyssal Depths)。"],
-["伴侶之深淵聖甲蟲(Abyss Scarab of the Consort)","深淵坑洞會生成深淵伴侶(Abyssal Consort)。"]],
-fresh:[
-["暗影疾行(Skittering Darkness)","深淵有機會生成深淵掠行鎖(Abyssal Skitterlocks)，取代深淵寶庫(Abyssal Troves)。"],
-["反應蟲群(Reactive Swarm)","每關閉一個深淵坑洞，後續坑洞生成的怪物增加 4%。"],
-["深淵機率(Abyss Chance)","地圖增加 8% 深淵出現機率。"],
-["深淵怪物數量(Abyss Monster Count)","深淵生成怪物數量增加 5%。"],
-["覺醒深淵(Awakened Depths)","深淵通往深淵絕境(Abyssal Depths)的機率增加 100%。"],
-["烏拉曼機率(Abyss Ulaman Chance)","深淵生成烏拉曼(Ulaman)陣營怪物的機率增加 50%。"]],
-diff:[["額外深淵","舊聖甲蟲直接增加 1 個","透過 Threads 添加遭遇，天賦輔助","系統改變"],["怪物數量","固定增加 100%","依坑洞逐步增加 4%，另有怪物數量天賦","機制重製"],["深淵絕境(Abyssal Depths)","直接保證出現","通往深淵絕境的機率 +100%","保證改機率"],["水晶／伴侶","有專屬聖甲蟲效果","目前列出的天賦未見完全相同效果","待核對"]],
-note:"深淵的怪物數量與遭遇控制方式改變。+100% 機率不等於保證出現，需留意基礎機率。"},
-{id:"bestiary",name:"獸獵",en:"Bestiary",icon:"♞",summary:"獸獵機制除了遭遇投資外，捕獲規則也有變動；3.30 中埃哈(Einhar)不再捕獲黃色野獸，紅色野獸(Red Beasts)及首領保留捕獲功能。",old:[
-["獸獵聖甲蟲(Bestiary Scarab)","地圖必定出現埃哈(Einhar)。"],
-["獸群之獸獵聖甲蟲(Bestiary Scarab of the Herd)","若地圖有埃哈，額外增加 5 隻紅色野獸。"],
-["複製之獸獵聖甲蟲(Bestiary Scarab of Duplicating)","複製地圖中捕獲的野獸。"]],
-fresh:[
-["獸獵之絲(Bestiary Threads)","3.30 主要透過獸獵之絲添加／強化遭遇。"],
-["黃色野獸規則變動","埃哈不再捕獲黃色野獸；紅色野獸及首領保留捕獲功能。"]],
-diff:[["埃哈出現","聖甲蟲保證出現","改由 Threads 控制","系統改變"],["額外紅獸","Herd 固定 +5 隻","需核對 3.30 天賦與 Threads 數值","待核對"],["野獸複製","Duplicating 直接複製捕獲野獸","目前未確認有完全相同替代","待核對"],["黃色野獸捕獲","舊版可捕獲","3.30 規則已變更","規則改動"]],
-note:"不要把未找到對應效果直接當成確定移除；本機制的新版完整詞綴仍建議逐項核對。"},
-{id:"essence",name:"精髓",en:"Essence",icon:"✧",summary:"3.30 精髓投資偏向額外精髓、高階精髓、精髓裝備與首領詞綴轉移；舊版固定增加怪物數量的效果不再完全相同。",old:[
-["精髓聖甲蟲(Essence Scarab)","額外增加 3 隻被精髓禁錮的怪物。"],
-["升格之精髓聖甲蟲(Essence Scarab of Ascent)","精髓提升一個階級。"],
-["穩定之精髓聖甲蟲(Essence Scarab of Stability)","腐化精髓只能升級或轉換，不會產生其他結果。"],
-["鈣化之精髓聖甲蟲(Essence Scarab of Calcification)","地圖原生稀有怪物會被精髓禁錮。"],
-["適應之精髓聖甲蟲(Essence Scarab of Adaptation)","釋放怪物後，將隨機精髓詞綴賦予另一隻禁錮怪物。"]],
-fresh:[
-["水晶晶格(Crystal Lattice)","15% 機率讓禁錮怪物額外擁有 3 個精髓。"],
-["額外精髓機率","5% 機率讓禁錮怪物額外擁有 1 個精髓。"],
-["水晶共鳴(Crystal Resonance)","地圖首領獲得地圖中被擊殺禁錮怪物的一個隨機精髓詞綴；使用瓦爾寶珠時，精髓會被替換成該怪物身上的其中一種精髓。"],
-["精髓機率(Essence Chance)","地圖有 5% 機率額外出現 1 隻被禁錮怪物。"],
-["強化能量(Amplified Energies)","禁錮怪物至少有 1 個最高可能階級的精髓。"],
-["精髓稀有機率(Essence Rare Chance)","禁錮怪物有 25% 機率額外掉落一件帶有精髓詞綴的稀有裝備。"],
-["豐產精髓(Prolific Essence)","地圖額外增加 1 隻被禁錮怪物。"]],
-diff:[["額外精髓怪物","+3 隻","額外 +1 隻，另有 5% 機率","固定數量下降"],["額外精髓數量","Adaptation 間接增加","15% 機率額外 +3 精髓","改為機率"],["精髓階級","Ascent 提升一階","至少一個最高可能階級","條件改變"],["腐化控制","Stability 限制腐化結果","Crystal Resonance 改變瓦爾寶珠結果","效果重製"],["稀有怪物精髓化","Calcification","未確認相同天賦","待核對"],["詞綴傳遞","Adaptation 傳遞至另一隻禁錮怪物","Crystal Resonance 將詞綴給地圖首領","作用對象改變"],["額外裝備","無直接對應","25% 機率額外掉落精髓稀有裝備","新增收益"]],
-note:"Crystal Lattice 的 15% 機率與 Crystal Resonance 的瓦爾寶珠互動已由 PoEDB / PoEWiki 確認。"},
-{id:"breach",name:"裂痕",en:"Breach",icon:"裂",summary:"3.30 裂痕重心轉向蜂巢(Hive)、要塞(Fortress)、母巢贈禮(Wombgifts)與不穩定裂痕(Unstable Breach)，透過 Threads 添加遭遇，天賦提供機率與獎勵方向。",old:[
-["蜂巢之裂痕聖甲蟲(Breach Scarab of the Hive)","增加裂痕蜂巢(Hive)。"],
-["不穩之裂痕聖甲蟲(Breach Scarab of Instability)","額外增加 2 個不穩定裂痕(Unstable Breaches)。"],
-["統帥之裂痕聖甲蟲(Breach Scarab of the Marshal)","不穩定裂痕內有首領；蜂巢可通往蜂巢要塞(Hive Fortress)。"],
-["激怒蟲群之裂痕聖甲蟲(Breach Scarab of the Incensed Swarm)","蜂巢後續波次難度及獎勵增加。"],
-["共鳴浪湧之裂痕聖甲蟲(Breach Scarab of Resonant Cascade)","每開啟一個不穩定裂痕，後續裂痕速度增加 10%，怪物難度及獎勵提高。"]],
-fresh:[
-["強化支配(Fortified Dominance)","蜂巢通往要塞的機率增加 40%；裂痕首領有 25% 機率複製。"],
-["裂痕機率(Breach Chance)","地圖裂痕出現機率增加 10%。"],
-["奢華母巢贈禮機率(Lavish Wombgift Chance)","奢華母巢贈禮出現機率增加 25%。"],
-["裂痕蜂巢之血數量(Breach Hiveblood Quantity)","蜂巢之血(Hiveblood)數量增加 5%。"],
-["神秘母巢贈禮機率(Mysterious Wombgift Chance)","神秘母巢贈禮出現機率增加 25%。"],
-["遠古母巢贈禮機率(Ancient Wombgift Chance)","遠古母巢贈禮出現機率增加 25%。"],
-["膨脹階級(Swelling Ranks)","裂痕怪物群體規模增加 10%；母巢贈禮數量增加 20%。"],
-["集結之力(Massing Forces)","地圖包含不穩定裂痕時，有 10% 機率額外增加 2 個不穩定裂痕。"],
-["適應反應(Adaptive Reaction)","可燃蟲洞(Flammable Burrows)爆炸範圍 +100%；蜂巢怪物每摧毀一個蟲洞增加韌性；蜂巢遭遇增加蜂巢之血及母巢贈禮。"]],
-diff:[["額外裂痕","Instability 固定 +2","Massing Forces 10% 機率 +2","固定改機率"],["蜂巢／要塞","聖甲蟲指定蜂巢／要塞","要塞機率 +40%","改為機率"],["首領","Marshal 增加首領","首領有 25% 機率複製","用途不同"],["怪物群體","Incensed Swarm 強化後續波次","Swelling Ranks 群體規模 +10%","機制改變"],["裂痕速度","Resonant Cascade 加快","未確認相同替代","待核對"],["獎勵","波次難度與獎勵成長","蜂巢之血、母巢贈禮等","獎勵系統重製"]],
-note:"Fortified Dominance 與 Massing Forces 的數值已由 PoEWiki 確認。"},
-{id:"expedition",name:"探險",en:"Expedition",icon:"⚒",summary:"3.30 探險可針對圖真(Tujen)、丹尼格(Dannig)、羅格(Rog)、格溫妮(Gwennen)投資，也能調整炸藥數量、範圍與引爆節奏。台服譯名為「探險」，非簡中「先祖秘藏」[reference:18]。",old:[
-["探險聖甲蟲(Expedition Scarab)","地圖必定出現探險。"],
-["尋符探險聖甲蟲(Expedition Scarab of Runefinding)","符文怪物印記(Runic Monster Marker)數量增加 100%。"],
-["維里西姆粉末探險聖甲蟲(Expedition Scarab of Verisium Powder)","炸藥數量增加 50%，爆炸範圍增加 80%。"],
-["灌注探險聖甲蟲(Expedition Scarab of Infusion)","探險日誌(Logbook)必定有 4 個隱含詞綴；每引爆一個遺跡(Remnant)，怪物難度及獎勵增加。"],
-["考古探險聖甲蟲(Expedition Scarab of Archaeology)","遺跡額外增加 2 個前綴及後綴。"]],
-fresh:[
-["極限考古(Extreme Archaeology)","炸藥數量變成 1；爆炸範圍大幅增加；怪物生成時額外失去生命；炸藥放置距離增加。"],
-["傑出爆破手(Distinguished Demolitionist)","炸藥範圍 +35%；炸藥數量 +20%。"],
-["埋藏知識(Buried Knowledge)","探險日誌掉落數量 +50%；符文怪物印記數量 +20%。"],
-["遠古銘文(Ancient Writings)","遺跡有 30% 機率額外增加一個後綴；探險額外增加 2 個遺跡。"],
-["遠古腐朽(Ancient Decay)","探險怪物生成時額外失去 20% 生命。"],
-["商人定向天賦","圖真 +90%、丹尼格 +65%、羅格 +90%、格溫妮 +90% 出現機率（依各自天賦）。"],
-["其他投資","遺物數量 +4%；商人重置貨幣掉落數量 +5%；引爆鏈速度可提高或降低 25%。"]],
-diff:[["符文怪物印記","+100%","+20%","新版較低"],["炸藥數量","+50%","+20%（另有 Extreme Archaeology 改為 1 顆）","玩法改變"],["爆炸範圍","+80%","大幅增加（Extreme Archaeology）","新版上限較高"],["放置距離","無直接效果","增加","新增"],["遺跡","額外詞綴","30% 機率額外 +1 後綴，另 +2 遺跡","機制改變"],["探險日誌","保證 4 隱含詞綴","掉落數量 +50%","品質轉數量"],["商人選擇","未提供相同定向控制","可提高指定商人出現率","新增定向投資"]],
-note:"Extreme Archaeology 在部分版本曾調整「怪物生成時失去生命」的細節，3.30 實際數值建議以遊戲內或當前 PoEDB 為準。炸藥數量變成 1，不能只看範圍增加就判定全面增強。"},
-{id:"legion",name:"軍團",en:"Legion",icon:"⚔",summary:"3.30 軍團強調無倒數計時的解凍流程、怪物額外獎勵、寶箱獎勵與碎片收益。",old:[
-["軍團聖甲蟲(Legion Scarab)","額外增加 1 場軍團遭遇。"],
-["軍官之軍團聖甲蟲(Legion Scarab of Officers)","軍團額外增加 5 名士官(Sergeants)。"],
-["寶藏之軍團聖甲蟲(Legion Scarab of Treasures)","軍團寶箱有 20% 機率將獎勵分配給釋放的軍團怪物。"],
-["永恆衝突之軍團聖甲蟲(Legion Scarab of Eternal Conflict)","軍團怪物可以重複解凍，每次增加難度及獎勵。"]],
-fresh:[
-["永恆衝突(Timeless Conflict)","軍團沒有倒數計時；解凍怪物及寶箱會逐步累積分裂(Schism)，完成後才開始遭遇。"],
-["後勤支援(Logistical Support)","已有獎勵的軍團怪物有 10% 機率額外獲得 2 個獎勵；無獎勵者有 20% 機率獲得 1 個獎勵；額外獎勵提高怪物生命。"],
-["掠奪寶藏(Pillaged Treasures)","軍團寶箱額外提供一個隨機獎勵。"],
-["徽章之星(Emblematic)","永恆裂片(Timeless Splinter)有 0.3% 機率直接掉落永恆徽章(Timeless Emblem)。"],
-["軍團巨石機率(Legion Monolith Chance)","地圖出現軍團機率增加 8%。"],
-["軍團將軍機率(Legion General Chance)","軍團出現將軍(General)的機率增加 20%。"],
-["軍團裂片複製機率(Legion Duplicate Splinter Chance)","永恆裂片有 5% 機率複製。"]],
-diff:[["額外軍團","額外 +1 場","由 Threads 添加遭遇","系統改變"],["士官","額外 +5","未確認直接對應","待核對"],["寶箱獎勵","20% 機率分散至怪物","寶箱額外提供隨機獎勵","效果改變"],["重複解凍","Eternal Conflict","Timeless Conflict：無計時與分裂","玩法重製"],["怪物獎勵","Treasures 分散獎勵","Logistical Support 額外獎勵","定向強化"],["碎片收益","未列出直接複製","Emblematic、Duplicate Splinter","新增"]],
-note:"Timeless Conflict 是遭遇流程改造，不是 Eternal Conflict 的逐字替代；分裂(Schism)機制已由 PoEWiki 確認。"},
-{id:"ritual",name:"祭祀",en:"Ritual",icon:"♜",summary:"3.30 祭祀出現奉獻(Tribute)與恩惠(Favor)取捨：可提高奉獻，但部分選項會限制重置或改變恩惠價格。",old:[
-["選擇性(Selectiveness)","前 2 次重置免費，額外增加 2 次重置機會。"],
-["幽光(Wisps)","祭壇生成野林幽光(Wildwood Wisp)，附近玩家獲得 100% 額外奉獻。"],
-["豐沛(Abundance)","祭壇提供的恩惠增加 100%。"],
-["屍體(Corpses)","額外增加一隻稀有的可物品化屍體怪物。"]],
-fresh:[
-["任意信條(Arbitrary Tenets)","祭壇恩惠的價格隨機變動，從減少 90% 到增加 80%。"],
-["不變教條(Immutable Dogma)","無法重置恩惠，但祭壇獻祭怪物提供 100% 更多奉獻。"],
-["世俗焦點(Secular Focus)","可完全關閉地圖中的祭祀遭遇，並增加其他可關閉機制的出現機率。"]],
-diff:[["奉獻(Tribute)","Wisps +100%","Immutable Dogma +100% more","數值近似、條件不同"],["恩惠數量","Abundance +100%","未確認相同天賦","待核對"],["恩惠重置","前 2 次免費，另 +2 次","Immutable Dogma 禁止重置","方向相反"],["額外屍體怪物","Corpses 增加稀有屍體怪物","未確認完全相同對應","待核對"]],
-note:"新版祭祀有高奉獻與恩惠成本變化的取捨；不要把 100% more 與 100% increased 混為一談。"},
-{id:"incursion",name:"穿越",en:"Incursion",icon:"⌛",summary:"舊版穿越聖甲蟲集中在增加怪物群、怪物稀有度與神殿物品化；3.30 需連同穿越之絲(Incursion Threads)及重製的阿茲瓦特神殿(Temple of Atzoatl)系統一起比較。",old:[
-["穿越聖甲蟲(Incursion Scarab)","地圖必定出現阿瓦(Alva)。"],
-["入侵之穿越聖甲蟲(Incursion Scarab of Invasion)","額外增加 12–16 群穿越怪物。"],
-["勇士之穿越聖甲蟲(Incursion Scarab of Champions)","35% 機率讓穿越怪物至少為魔法怪物；群體規模 +15%。"],
-["時間線之穿越聖甲蟲(Incursion Scarab of Timelines)","擊殺最終建築師(Architect)後掉落物品化神殿，房間階級隨機生成。"]],
-fresh:[
-["穿越之絲(Incursion Threads)","3.30 主要透過穿越之絲添加／強化遭遇。"],
-["神殿重製","阿茲里(Atziri)已移入阿茲瓦特神殿，穿越相關獎勵與房間規則有較大變動，需以 3.30 完整資料核對。"]],
-diff:[["阿瓦出現","聖甲蟲保證出現","由穿越之絲控制","系統改變"],["額外怪物群","+12–16 群","未確認直接對應數值","待核對"],["怪物稀有度","35% 機率至少魔法怪物","未確認相同效果","待核對"],["群體規模","+15%","未確認相同數值","待核對"],["物品化神殿","Timelines 使其掉落","神殿系統本身已重製","機制本體變動"]],
-note:"3.30 中阿茲里移入阿茲瓦特神殿，穿越機制本體有重大調整；不把缺少資料解讀成確定移除。"},
-{id:"betrayal",name:"背叛者",en:"Betrayal",icon:"♟",summary:"舊版著重君(Jun)遭遇、永恆之火(Allflame)怪物群、援軍及審問保階；3.30 也有新的永恆之火／隱匿物品(Veiled Items)獎勵方向，並調整安全屋獎勵。",old:[
-["背叛者聖甲蟲(Betrayal Scarab)","地圖必定出現君(Jun)。"],
-["永恆之火之背叛者聖甲蟲(Betrayal Scarab of Allflame)","被永恆之火餘燼(Allflame Ember)替換的怪物群增加 75%。"],
-["援軍之背叛者聖甲蟲(Betrayal Scarab of Reinforcements)","辛迪加(Syndicate)成員有 50% 機率獲得援軍。"],
-["不破之背叛者聖甲蟲(Betrayal Scarab of Unbreaking)","審問辛迪加成員時，50% 機率不降低階級。"]],
-fresh:[
-["背叛者之絲(Betrayal Threads)","3.30 主要透過背叛者之絲添加／強化遭遇。"],
-["安全屋獎勵調整","干涉安全屋(Intervention Safehouse)成員改為獎勵特定傳奇類型（如傳奇斧）的陷阱儲藏箱。"],
-["永恆之火相關","永恆之火餘燼改為直接套用於地圖的通貨；隱匿物品有機會以永恆之火形式掉落，需核對正式詞綴及條件。"]],
-diff:[["君出現","保證出現","由背叛者之絲控制","系統改變"],["永恆之火怪物群","+75% 替換數量","永恆之火改為地圖通貨；獎勵方向改變","獎勵方向改變"],["援軍","50% 機率","未確認完全相同天賦","待核對"],["審問不降階","50% 機率","未確認完全相同天賦","待核對"],["隱匿物品","非上述聖甲蟲核心效果","安全屋獎勵類型改變；永恆之火新用途","新增／重製"]],
-note:"永恆之火新用途不等於舊版 Allflame Scarab 的 +75% 怪物群效果；3.30 中永恆之火餘燼已變成地圖通貨。"},
-{id:"blight",name:"凋落",en:"Blight",icon:"❖",summary:"3.30 凋落資料提及特殊路線、強化凋落核心(Blight Cores)與新小首領；舊版則以寶箱數量與波次強化為主。",old:[
-["凋落聖甲蟲(Blight Scarab)","地圖必定出現凋落。"],
-["綻放之凋落聖甲蟲(Blight Scarab of Blooming)","額外增加 3 個凋落寶箱。"],
-["振奮之凋落聖甲蟲(Blight Scarab of Invigoration)","凋落怪物每波獲得更多生命及傷害，獎勵提高。"],
-["枯萎之心之凋落聖甲蟲(Blight Scarab of Blightheart)","凋落遭遇額外生成特殊獎勵。"]],
-fresh:[
-["凋落之絲(Blight Threads)","3.30 主要透過凋落之絲添加／強化遭遇。"],
-["真菌通道(Mycotic Lanes)","特殊凋落路線，提供不同獎勵方向。"],
-["強化凋落核心","可召喚新的小首領。"],
-["特殊入侵","部分凋落路線可能受到盜賊流亡者(Rogue Exiles)入侵。"]],
-diff:[["凋落出現","聖甲蟲保證出現","由凋落之絲控制","系統改變"],["額外寶箱","Blooming 固定 +3","未確認直接對應","待核對"],["怪物難度與獎勵","Invigoration 強化波次","特殊路線／核心設計","玩法重製"],["特殊獎勵","Blightheart","新路線及核心獎勵","獎勵系統改變"]],
-note:"新版內容不宜只用「寶箱數量」比較，還要把路線、核心與首領收益納入。"},
-{id:"ultimatum",name:"通牒",en:"Ultimatum",icon:"△",summary:"3.30 通牒更偏向輪數與風險控制；舊版的催化劑(Catalysts)、銘文通牒(Inscribed Ultimatum)定向獎勵是否保留需以當前資料為準。",old:[
-["通牒聖甲蟲(Ultimatum Scarab)","地圖必定出現通牒。"],
-["賄賂之通牒聖甲蟲(Ultimatum Scarab of Bribing)","怪物經驗增加 150%，獎勵相當於額外完成 2 輪。"],
-["決鬥之通牒聖甲蟲(Ultimatum Scarab of Dueling)","有可能時必定出現傳奇首領。"],
-["催化之通牒聖甲蟲(Ultimatum Scarab of Catalysing)","獎勵只提供催化劑(Catalysts)。"],
-["銘文之通牒聖甲蟲(Ultimatum Scarab of Inscription)","原本提供催化劑的獎勵改成銘文通牒(Inscribed Ultimatums)。"]],
-fresh:[
-["毀滅賭注(Ruinous Wager)","怪物特殊技能會施加毀滅(Ruin)，累積 7 層失敗；怪物及詞綴造成的傷害降低 50%。"],
-["嚴酷試煉(Gruelling Gauntlet)","無法選擇每輪施加的詞綴，最多持續 13 輪，最後一輪不會出現首領。"],
-["秩序僕從(Servant of Order)","可以完全關閉通牒，將機制出現機率轉移至其他可關閉機制。"]],
-diff:[["額外輪數","Bribing 等價額外 2 輪獎勵","Gruelling Gauntlet 最多 13 輪","輪數上限改變"],["首領","Dueling 強制傳奇首領","Gruelling Gauntlet 最後一輪禁止首領","方向不同"],["催化劑獎勵","Catalysing 限定獎勵種類","3.30 是否保留需以當前資料核對","待核對"],["銘文通牒","Inscription 轉換獎勵","3.30 是否保留需以當前資料核對","待核對"],["怪物傷害","無直接降低效果","Ruinous Wager -50% 傷害","新增生存選項"]],
-note:"Gruelling Gauntlet 的「13 輪、最後無首領」在搜尋中未找到 3.30 的獨立反駁，但建議仍以遊戲內為準。新版的輪數、首領條件及毀滅機制是玩法調整，不應與舊版聖甲蟲效果直接等同。"},
-{id:"harvest",name:"豐收",en:"Harvest",icon:"✿",summary:"3.30 中豐收不再使用獨立果園，聖殿密園(Sacred Grove)直接生成於地圖；舊版確定複製生靈之力(Lifeforce)的效果改成機率複製。",old:[
-["豐收聖甲蟲(Harvest Scarab)","地圖必定出現聖殿密園(Sacred Grove)。"],
-["倍增之豐收聖甲蟲(Harvest Scarab of Doubling)","生靈之力(Lifeforce)複製，怪物生命增加 100%。"],
-["富饒之豐收聖甲蟲(Harvest Scarab of Cornucopia)","每種顏色最多額外增加一個階級 4 種子(Tier 4 Seeds)。"]],
-fresh:[
-["密園呼喚(Call of the Grove)","聖殿密園出現機率 +30%。"],
-["豐饒收穫(Bountiful Harvest)","怪物經驗 +200%；植物有 10% 機率額外生成一隻怪物。"],
-["密園之心(Heart of the Grove)","階級 4 植物機率 +60%；10% 機率未選擇的作物不枯萎。"],
-["豐盛大豐收(Bumper Crop)","50% 機率讓聖殿密園額外出現一次豐收。"],
-["倍增時節(Doubling Season)","生靈之力有 10% 機率複製。"],
-["黃色／紫色／藍色乾旱(Vivid／Wild／Primal Drought)","分別降低黃色／紫色／藍色植物出現機率 25%。"]],
-diff:[["豐收出現","保證出現","出現機率 +30%；不再有獨立果園","保證改機率 + 機制重製"],["生靈之力複製","直接複製","10% 機率複製","確定改機率"],["階級 4 種子","每種最多額外 +1","階級 4 機率 +60%","計算方式改變"],["額外豐收","無直接對應","50% 機率額外一次","新增"]],
-note:"Doubling 舊版是直接複製，3.30 的倍增時節(Doubling Season)為 10% 機率（已由 PoEWiki 確認）；需注意兩者收益期望值差異。"},
-{id:"strongbox",name:"保險箱",en:"Strongbox / Ambush",icon:"▣",summary:"3.30 保險箱投資轉向特定箱種及掉落複製；舊版的額外箱數、重開與詞綴強化未必有直接替代。Ambush 在繁中頁面可見「強襲」與「伏擊」兩種寫法，本頁並列呈現[reference:19][reference:20]。",old:[
-["強襲聖甲蟲(Ambush Scarab)／伏擊聖甲蟲","額外增加 4 個保險箱(Strongboxes)。"],
-["隱藏隔層之強襲聖甲蟲(Ambush Scarab of Hidden Compartments)","15% 機率可以重新開啟。"],
-["效能之強襲聖甲蟲(Ambush Scarab of Potency)","保險箱詞綴效果 +75%。"],
-["遏制之強襲聖甲蟲(Ambush Scarab of Containment)","大量額外保險箱，並讓地圖怪物埋伏。"],
-["洞悉之強襲聖甲蟲(Ambush Scarab of Discernment)","增加稀有種類保險箱出現機率。"]],
-fresh:[
-["奧秘寶庫(Vault of Mysteries)","保險箱掉落的命運卡複製。"],
-["隱蔽物流(Concealed Logistics)","保險箱掉落的地圖複製。"],
-["占卜師保險箱機率(Diviner's Strongbox Chance)","占卜師保險箱(Diviner's Strongbox)出現機率 +30%。"],
-["製圖師保險箱機率(Cartographer's Strongbox Chance)","製圖師保險箱(Cartographer's Strongbox)出現機率 +30%。"],
-["奧術師／工匠機率(Arcanist's／Artisan's Chance)","奧術師保險箱(Arcanist's)、工匠保險箱(Artisan's)出現機率各 +30%。"],
-["備用藏匿處(Backup Cache)","保險箱掉落的通貨複製。"]],
-diff:[["額外保險箱","固定 +4","3.30 額外遭遇來源需另核對","待核對"],["重複開啟","15% 機率","3.30 有 10% 機率可重新開啟的節點（秘密隔層 Secret Compartments）","數值下降"],["詞綴效果","+75%","3.30 是否有直接對應需核對","待核對"],["特定箱種","提高稀有種類機率","分別指定多種箱子 +30%","定向化"],["獎勵複製","無直接對應","命運卡、地圖、通貨複製","新增"]],
-note:"奧秘寶庫(Vault of Mysteries)的命運卡複製已由 PoEWiki 確認；秘密隔層(Secret Compartments)為 10% 重開機率，與舊版隱藏隔層(Hidden Compartments)的 15% 不同。"},
-{id:"shrine",name:"神殿",en:"Shrine / Domination",icon:"✚",summary:"3.30 神殿更重視增益效果與特殊神殿類型，而非只增加神殿數量。",old:[
-["支配聖甲蟲(Domination Scarab)","額外增加 3 個神殿(Shrine)。"],
-["幻影之支配聖甲蟲(Domination Scarab of Apparitions)","額外增加 2 個幻影神殿(Apparition Shrines)。"],
-["進化之支配聖甲蟲(Domination Scarab of Evolution)","額外增加 1 個進化神殿(Evolving Shrine)。"],
-["恐懼之支配聖甲蟲(Domination Scarab of Terrors)","神殿由輿圖首領守護。"]],
-fresh:[
-["支配神殿機率(Domination Shrine Chance)","20% 機率額外增加神殿。"],
-["所有閃耀之物(All That Glitters)","10% 機率生成貪婪神殿(Covetous Shrine)。"],
-["融合(Syncretism)","神殿增益效果 +30%，並額外賦予隨機神殿效果。"],
-["支配神殿效果(Domination Shrine Effect)","神殿增益效果 +20%。"],
-["受力量吸引(Drawn to Power)","50% 機率額外增加一群守護怪物，且至少有一群魔法怪物。"]],
-diff:[["神殿數量","固定 +3","20% 機率額外增加","固定改機率"],["特殊神殿","Apparition、Evolving","貪婪神殿機率","種類改變"],["增益效果","無上述直接效果","+20% 或 +30%","新增"],["守護怪物","輿圖首領守護神殿","額外守護怪物群","條件改變"]],
-note:"融合(Syncretism)的 +30% 效果與隨機額外神殿效果已由 PoEDB / PoEWiki 確認；新舊版特殊神殿名稱與效果不同，不能視為同一種遭遇。"},
-{id:"exiles",name:"盜賊流亡者",en:"Rogue Exiles / Anarchy",icon:"⚑",summary:"3.30 盜賊流亡者可投資大量生成、額外通貨與獎勵；舊版則有盜賊巨人(Rogue Giant)及成對出現等特殊效果。",old:[
-["混亂聖甲蟲(Anarchy Scarab)","額外增加 5 隻盜賊流亡者(Rogue Exiles)。"],
-["浩瀚混亂聖甲蟲(Anarchy Scarab of Gigantification)","30% 機率將野生盜賊流亡者替換為盜賊巨人(Rogue Giant)。"],
-["夥伴之混亂聖甲蟲(Anarchy Scarab of Partnership)","50% 機率讓野生盜賊流亡者成對出現。"],
-["卓越之混亂聖甲蟲(Anarchy Scarab of the Exceptional)","額外增加 1 隻卓越盜賊流亡者(Exceptional Rogue Exile)。"]],
-fresh:[
-["不速之客(Unexpected Stranger)","額外增加 1 隻盜賊流亡者。"],
-["流亡者通貨機率(Exile Currency Chance)","盜賊流亡者有 5% 機率額外掉落通貨。"],
-["皇家衛隊(Royal Guard)","20% 機率讓地圖首領有兩隻盜賊流亡者保鑣。"],
-["盜賊商人(Rogue Trader)","野生盜賊流亡者額外獎勵機率 +50%，但生命增加 100%。"],
-["額外流亡者生成(Additional Exile Spawn)","25% 機率額外增加 1 隻盜賊流亡者。"],
-["流亡意志(Exiled Will)","野生盜賊流亡者被罪魂(Tormented Spirit)附身。"],
-["騷動(Ruckus)","8% 機率額外生成 20 隻盜賊流亡者。"],
-["流亡者成對機率(Exile Pair Chance)","10% 機率讓野生盜賊流亡者成對出現。"]],
-diff:[["額外流亡者","+5","+1 或 25% 機率 +1","數量投資改變"],["大量生成","無相同固定效果","8% 機率 +20","新增爆發"],["成對出現","50% 機率","10% 機率","機率下降"],["盜賊巨人","30% 機率","未找到直接對應","待核對"],["特殊流亡者","額外卓越","首領保鑣","效果改變"],["額外獎勵","無直接對應","額外獎勵機率 +50%","新增"]],
-note:"騷動(Ruckus)的 8%／20 隻已由 PoEWiki 確認；3.30 中卓越盜賊流亡者不再有鏡像或稀有度升級獎勵。"},
-{id:"torment",name:"苦痛",en:"Torment",icon:"♨",summary:"3.30 苦痛偏向提高附身稀有怪物數量與罪魂(Tormented Spirit)持續時間；舊版可增加更多罪魂並改變種類。",old:[
-["苦痛聖甲蟲(Torment Scarab)","區域被 4 個額外罪魂糾纏，並有 10% 機率從被附身怪物釋放罪魂。"],
-["奇特之苦痛聖甲蟲(Torment Scarab of Peculiarity)","替換成特殊種類的罪魂。"],
-["附身之苦痛聖甲蟲(Torment Scarab of Possession)","稀有怪物有 25% 機率被最多 3 隻罪魂附身。"]],
-fresh:[
-["超常聚會(Paranormal Meeting)","額外增加 1 隻罪魂。"],
-["罪魂持續時間(Tormented Spirit Duration)","罪魂持續時間增加。"],
-["罪魂機率(Tormented Spirit Chance)","10% 機率額外增加 1 隻罪魂。"],
-["無情折磨(Unrelenting Torment)","地圖首領有 10% 機率被罪魂包圍，並提高特殊罪魂出現機率。"],
-["降神會(Seance)","最多 5 隻稀有怪物被附身，牠們的僕從也會受到影響。"]],
-diff:[["額外罪魂","+4","+1，另有 10% 機率 +1","數量下降"],["特殊罪魂","Peculiarity 替換種類","提高特殊罪魂出現機率","方式改變"],["附身怪物","25% 機率最多 3 隻","Seance 最多 5 隻稀有怪物","上限提高"],["首領附身","未列出直接效果","首領有 10% 機率被罪魂包圍","新增"]],
-note:"降神會(Seance)、超常聚會(Paranormal Meeting)、罪魂機率(Tormented Spirit Chance)等核心效果已由 PoEWiki 確認；新版降神會的附身上限與舊版附身(Possession)的機率型效果不同。"},
-{id:"beyond",name:"超越",en:"Beyond",icon:"◉",summary:"舊版有多種超越聖甲蟲；3.30 主要透過輿圖機制及惡魔喚魔者(Demonic Evocators)等新方式回歸。",old:[
-["超越聖甲蟲系列(Beyond Scarab)","包含增加超越遭遇及不同超越怪物／獎勵方向的聖甲蟲。"]],
-fresh:[
-["惡魔喚魔者(Demonic Evocators)","超越透過惡魔喚魔者回歸地圖；超越首領可揭露惡魔領域入口。"],
-["輿圖天賦(Atlas Passive)","3.30 有超越相關輿圖投資；詳細詞綴應以當前天賦樹核對。"]],
-diff:[["遭遇與獎勵","多種 Scarab 分別控制","透過惡魔喚魔者及 Atlas 投資","系統改變"]],
-note:"3.30 中超越以惡魔喚魔者等形式回歸，並非單純的聖甲蟲替代。本頁未列出每一種舊聖甲蟲及新節點的逐項數值，避免填入未核實內容。"},
-{id:"delirium",name:"譫妄",en:"Delirium",icon:"☁",summary:"舊版譫妄聖甲蟲有多種不同投資方向；3.30 中譫妄寶珠(Delirium Orbs)可直接重鑄稀有地圖並附加譫妄(Delirious)詞綴。",old:[
-["譫妄聖甲蟲系列(Delirium Scarab)","包含額外遭遇及不同譫妄效果的聖甲蟲。"]],
-fresh:[
-["譫妄寶珠(Delirium Orbs)","可重鑄稀有地圖，附加 5%–100% 的譫妄詞綴，每 20% 增加一個獎勵。"],
-["輿圖天賦(Atlas Passive)","3.30 有譫妄相關天賦投資；詳細詞綴待逐項核對。"]],
-diff:[["遭遇與獎勵","多種 Scarab 分別控制","譫妄寶珠直接改造地圖；Atlas 投資輔助","系統改變"]],
-note:"譫妄寶珠的改動已由 3.30 補丁說明確認；需要再從舊版聖甲蟲完整詞綴與新版天賦樹逐條核對後，才能提供數值級比較。"},
-{id:"delve",name:"掘獄",en:"Delve / Sulphite",icon:"⛏",summary:"掘獄本體仍可遊玩，但 3.30 中掘獄專屬的輿圖天賦群已移除；亞硫酸(Sulphite)資源改為出現在特定地圖。",old:[
-["亞硫酸聖甲蟲系列(Sulphite Scarab)","增加地圖亞硫酸收益或提供相關效果（依舊版詞綴）。"]],
-fresh:[
-["掘獄天賦群移除","3.30 中掘獄專屬輿圖天賦群已移除；掘獄本體仍可透過亞硫酸進入礦坑(Mine)。"]],
-diff:[["掘獄遊戲內容","可透過亞硫酸進入礦坑","掘獄本體仍存在；專屬 Atlas 投資已移除","天賦投資變動"],["資源獲取","Sulphite Scarab 等","亞硫酸出現在特定地圖","系統改變"]],
-note:"重點是「掘獄專屬輿圖天賦」被移除，不是掘獄內容被刪除。不要混淆機制本體與天賦投資。"},
-{id:"heist",name:"劫盜",en:"Heist",icon:"♜",summary:"劫盜本身仍是獨立玩法，但 3.30 中其專屬輿圖天賦投資群已移除；走私者藏匿處(Smuggler's Caches)出現在特定地圖。",old:[
-["劫盜相關投資","舊版有地圖側的劫盜相關輿圖投資；此處不將其誤稱為聖甲蟲。"]],
-fresh:[
-["劫盜天賦群移除","3.30 中劫盜專屬輿圖天賦群已移除；劫盜本體仍可遊玩。"],
-["資源獲取","走私者藏匿處出現在特定地圖。"]],
-diff:[["劫盜遊戲內容","劫盜合約與藍圖玩法存在","玩法本體仍存在；專屬 Atlas 投資已移除","天賦投資變動"]],
-note:"此項是補充機制，不屬於舊版聖甲蟲與新版 Threads 的一對一比較；重點同樣是「天賦群移除」而非「機制刪除」。"}
+ {id:"abyss",name:"深淵",en:"Abyss",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"深淵為十種主要綢帶機制之一；3.30 節點以 為準。",old:[
+  {name:"聖甲蟲：深淵 (Abyss Scarab)",effect:"區域內包含 1 個額外深淵。"},
+  {name:"聖甲蟲：眾生深淵 (Abyss Scarab of Multitudes)",effect:"深淵裂隙每餵養 1 個靈魂，生成的怪物數量增加 100%。"},
+  {name:"聖甲蟲：晶石深淵 (Abyss Scarab of Crystals)",effect:"非最終深淵坑洞關閉時，產生深淵水晶。"},
+  {name:"聖甲蟲：落降深淵 (Abyss Scarab of Descending)",effect:"區域內包含 1 個無盡深淵。"},
+  {name:"聖甲蟲：伴侶深淵 (Abyss Scarab of the Consort)",effect:"區域內 1 個深淵坑洞會生成深淵伴侶。"}
+ ],nodes:[],diff:[],thread:"深淵綢帶屬主要機制，使用綢帶把深淵加入地圖。",note:"節點依。"},
+ {id:"bestiary",name:"獸獵",en:"Bestiary",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"獸獵綢帶屬主要機制；3.30 節點以 為準。",old:[
+  {name:"聖甲蟲：獸獵 (Bestiary Scarab)",effect:"區域內含有埃哈。"},
+  {name:"聖甲蟲：牧群獸獵 (Bestiary Scarab of the Herd)",effect:"若區域含有埃哈，額外增加 5 隻紅色野獸。"},
+  {name:"聖甲蟲：增生獸獵 (Bestiary Scarab of Duplicating)",effect:"在區域內製造已捕獲野獸的複製體。"}
+ ],nodes:[],diff:[],thread:"獸獵綢帶屬主要機制。",note:"節點依。"},
+ {id:"essence",name:"精髓",en:"Essence",category:"secondary",categoryLabel:"次要聯盟機制",status:"無綢帶｜Atlas 投資",summary:"精髓屬次要機制，以 Atlas 節點調整。",old:[
+  {name:"聖甲蟲：精髓 (Essence Scarab)",effect:"區域內包含 3 個額外被禁錮的怪物。"},
+  {name:"聖甲蟲：上升精髓",effect:"區域內找到的精髓提升一個階級。"},
+  {name:"聖甲蟲：穩定精髓",effect:"在區域內腐化精髓，只會使其升級或轉化成其他精髓。"},
+  {name:"聖甲蟲：鈣化精髓",effect:"區域內原生稀有怪物會被精髓禁錮。"},
+  {name:"聖甲蟲：適性精髓",effect:"被禁錮怪物脫困後，會使另一隻被禁錮怪物獲得隨機精髓詞綴。"}
+ ],nodes:[],diff:[],thread:"精髓為次要機制，不使用綢帶。",note:"節點依。"},
+ {id:"breach",name:"裂痕",en:"Breach",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"裂痕為主要綢帶機制。",old:[
+  {name:"聖甲蟲：窩巢裂痕",effect:"區域內含有一座裂痕巢穴。"},
+  {name:"聖甲蟲：動盪裂痕",effect:"區域內含有 2 道額外不穩定裂痕。"},
+  {name:"聖甲蟲：元帥裂痕",effect:"不穩定裂痕含頭目；巢穴通往巢裔要塞。"},
+  {name:"聖甲蟲：怒潮裂痕",effect:"艾里絲技能改為激怒巢裔。"},
+  {name:"聖甲蟲：共鳴浪湧裂痕",effect:"每道已開啟不穩定裂痕使速度 +10%。"}
+ ],nodes:[],diff:[],thread:"裂痕綢帶屬主要機制。",note:"節點依。"},
+ {id:"expedition",name:"探險",en:"Expedition",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"探險為主要綢帶機制。",old:[
+  {name:"聖甲蟲：探險",effect:"區域內包含 1 個額外探險事件。"},
+  {name:"聖甲蟲：尋符探險",effect:"符文怪物標記數量 +100%。"},
+  {name:"聖甲蟲：維里西姆粉末探險",effect:"炸藥數量 +50%；爆炸範圍 +80%。"},
+  {name:"聖甲蟲：注能探險",effect:"日誌固定 4 條隱含詞綴；依遺跡提高難度與獎勵。"},
+  {name:"聖甲蟲：考古探險",effect:"遺跡 +2 後綴、+2 前綴。"}
+ ],nodes:[],diff:[],thread:"探險綢帶屬主要機制。",note:"節點依。"},
+ {id:"legion",name:"戰亂",en:"Legion",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"戰亂為主要綢帶機制。",old:[
+  {name:"聖甲蟲：戰亂",effect:"區域內包含 1 個額外戰亂事件。"},
+  {name:"聖甲蟲：幹部戰亂",effect:"軍團派系額外包含 5 名中士。"},
+  {name:"聖甲蟲：寶藏戰亂",effect:"戰亂寶箱脫離靜止時 20% 擴散獎勵。"},
+  {name:"聖甲蟲：永恆鬥爭戰亂",effect:"戰亂怪物可多次脫離靜止，增加難度與獎勵。"}
+ ],nodes:[],diff:[],thread:"戰亂綢帶屬主要機制。",note:"節點依。"},
+ {id:"ritual",name:"祭祀",en:"Ritual",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"祭祀為主要綢帶機制。",old:[
+  {name:"聖甲蟲：揀選祭祀",effect:"前 2 次重骰免費；神壇額外 +2 次重骰。"},
+  {name:"聖甲蟲：妖精祭祀",effect:"神壇生成荒林妖精，使附近玩家貢禮 +100%。"},
+  {name:"聖甲蟲：繁榮祭祀",effect:"恩賜之物 +100%。"},
+  {name:"聖甲蟲：荒屍祭祀",effect:"額外 +1 隻可物品化稀有屍體怪物。"}
+ ],nodes:[],diff:[],thread:"祭祀綢帶屬主要機制。",note:"節點依。"},
+ {id:"incursion",name:"穿越",en:"Incursion",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"穿越為主要綢帶機制。",old:[
+  {name:"聖甲蟲：穿越",effect:"區域內含有艾瓦。"},
+  {name:"聖甲蟲：侵略穿越",effect:"額外 12 至 16 群穿越怪物。"},
+  {name:"聖甲蟲：鬥士穿越",effect:"35% 至少魔法；群體規模 +15%。"},
+  {name:"聖甲蟲：時間線穿越",effect:"擊殺最終建築師掉落物品化神殿。"}
+ ],nodes:[],diff:[],thread:"穿越綢帶屬主要機制。",note:"節點依。"},
+ {id:"betrayal",name:"反叛",en:"Betrayal",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"反叛為主要綢帶機制。",old:[
+  {name:"聖甲蟲：反叛",effect:"區域內含有瓊恩。"},
+  {name:"聖甲蟲：不滅之火反叛",effect:"被不滅之火餘燼替換的怪物群 +75%。"},
+  {name:"聖甲蟲：支援反叛",effect:"成員獲得援軍機率 +50%。"},
+  {name:"聖甲蟲：催堅反叛",effect:"被審問目標 50% 不降低階級。"}
+ ],nodes:[],diff:[],thread:"反叛綢帶屬主要機制。",note:"節點依。"},
+ {id:"blight",name:"凋落",en:"Blight",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"凋落為主要綢帶機制。",old:[
+  {name:"聖甲蟲：凋落",effect:"區域內包含 1 個凋落事件。"},
+  {name:"聖甲蟲：枯萎之心凋落",effect:"掉落凋落保險箱、更多波次。"},
+  {name:"聖甲蟲：綻放凋落",effect:"最多額外 3 個傳奇頭目；傳奇生命 +100%。"},
+  {name:"聖甲蟲：振奮凋落",effect:"每座賦予塔使範圍內怪物提高難度與獎勵。"}
+ ],nodes:[],diff:[],thread:"凋落綢帶屬主要機制。",note:"節點依。"},
+ {id:"ultimatum",name:"通牒",en:"Ultimatum",category:"primary",categoryLabel:"主要聯盟機制",status:"綢帶機制",summary:"通牒為主要綢帶機制。",old:[
+  {name:"聖甲蟲：通牒",effect:"區域內包含 1 個通牒事件。"},
+  {name:"聖甲蟲：賄賂通牒",effect:"通牒怪物經驗 +150%；獎勵如同額外完成 2 回合。"},
+  {name:"聖甲蟲：決鬥通牒",effect:"條件允許時必定觸發傳奇頭目。"},
+  {name:"聖甲蟲：催化通牒",effect:"只提供催化劑獎勵。"},
+  {name:"聖甲蟲：銘文通牒",effect:"催化劑獎勵改為銘文。"}
+ ],nodes:[],diff:[],thread:"通牒綢帶屬主要機制。",note:"節點依。"},
+ {id:"harvest",name:"豐收",en:"Harvest",category:"secondary",categoryLabel:"次要聯盟機制",status:"無綢帶｜Atlas 投資",summary:"豐收為次要機制，以聖植／聖獸為新版主體。",old:[
+  {name:"聖甲蟲：豐收",effect:"區域內含有聖殿密園。"},
+  {name:"聖甲蟲：倍增豐收",effect:"生靈之力複製；怪物生命 +100%。"},
+  {name:"聖甲蟲：富饒豐收",effect:"每種類額外保證 1 個階級 4 種子。"}
+ ],nodes:[],diff:[],thread:"豐收為次要機制，不使用綢帶。",note:"節點依。"},
+ {id:"strongbox",name:"保險箱",en:"Strongbox / Ambush",category:"secondary",categoryLabel:"次要聯盟機制",status:"無綢帶｜Atlas 投資",summary:"保險箱為次要機制。",old:[
+  {name:"聖甲蟲：伏擊",effect:"額外 +4 個保險箱。"},
+  {name:"聖甲蟲：暗室伏擊",effect:"15% 可再次開啟。"},
+  {name:"聖甲蟲：爆發伏擊",effect:"固定詞綴 +75%。"},
+  {name:"聖甲蟲：遏制伏擊",effect:"大量額外箱、伏擊。"},
+  {name:"聖甲蟲：洞察伏擊",effect:"稀有箱種機率提高。"}
+ ],nodes:[],diff:[],thread:"保險箱為次要機制。",note:"節點依。"},
+ {id:"shrine",name:"神殿",en:"Shrine / Domination",category:"secondary",categoryLabel:"次要聯盟機制",status:"無綢帶｜Atlas 投資",summary:"神殿為次要機制。",old:[
+  {name:"聖甲蟲：支配",effect:"額外 +3 神殿。"},
+  {name:"聖甲蟲：映像支配",effect:"額外 +2 幻影神殿。"},
+  {name:"聖甲蟲：進化支配",effect:"額外 +1 進化神殿。"},
+  {name:"聖甲蟲：惡懼支配",effect:"神殿由額外地圖頭目看守。"}
+ ],nodes:[],diff:[],thread:"神殿為次要機制。",note:"節點依。"},
+ {id:"exiles",name:"盜賊流亡者",en:"Rogue Exiles / Anarchy",category:"secondary",categoryLabel:"次要聯盟機制",status:"無綢帶｜Atlas 投資",summary:"盜賊流亡者為次要機制。",old:[
+  {name:"聖甲蟲：混亂",effect:"額外 +4 盜賊流亡者。"},
+  {name:"聖甲蟲：浩瀚混亂",effect:"30% 被盜賊巨人取代。"},
+  {name:"聖甲蟲：結夥混亂",effect:"50% 成對出現。"},
+  {name:"聖甲蟲：至高混亂",effect:"額外 +1 卓越盜賊流亡者。"}
+ ],nodes:[],diff:[],thread:"盜賊流亡者為次要機制。",note:"節點依。"},
+ {id:"torment",name:"苦痛",en:"Torment",category:"secondary",categoryLabel:"次要聯盟機制",status:"無綢帶｜Atlas 投資",summary:"苦痛為次要機制。",old:[
+  {name:"聖甲蟲：苦痛",effect:"額外 +4 罪魂。"},
+  {name:"聖甲蟲：特異苦痛",effect:"罪魂替換為異常型態。"},
+  {name:"聖甲蟲：附身苦痛",effect:"稀有怪物 25% 被最多 3 罪魂附身。"}
+ ],nodes:[],diff:[],thread:"苦痛為次要機制。",note:"節點依。"},
+ {id:"beyond",name:"超越",en:"Beyond",category:"tertiary",categoryLabel:"第三類聯盟機制",status:"無綢帶｜自然出現率",summary:"超越為第三類機制。",old:[
+  {name:"聖甲蟲：超越",effect:"擊殺區域內敵人吸引更強怪物。"},
+  {name:"聖甲蟲：血病超越",effect:"融合範圍 +50%；30% 取得詞綴 20 秒。"},
+  {name:"聖甲蟲：復興超越",effect:"多勢力頭目；汙染通貨 +20%；傳奇頭目機率 +30%。"},
+  {name:"聖甲蟲：侵略超越",effect:"稀有／傳奇怪物額外 8–12 傳送門。"}
+ ],nodes:[],diff:[],thread:"超越為第三類機制。",note:"節點依。"},
+ {id:"delirium",name:"譫妄",en:"Delirium",category:"tertiary",categoryLabel:"第三類聯盟機制",status:"無綢帶｜自然出現率",summary:"譫妄為第三類機制。",old:[
+  {name:"聖甲蟲：譫妄",effect:"區域內包含 1 個譫妄之鏡。"},
+  {name:"聖甲蟲：狂熱譫妄",effect:"量表 +100%；遠離鏡子強化速度 +50%。"},
+  {name:"聖甲蟲：偏執譫妄",effect:"額外 +2 種獎勵類型。"},
+  {name:"聖甲蟲：神經譫妄",effect:"包含所有傳奇譫妄頭目。"},
+  {name:"聖甲蟲：幻覺譫妄",effect:"掉落地圖帶多層譫妄。"}
+ ],nodes:[],diff:[],thread:"譫妄為第三類機制。",note:"節點依。"},
+ {id:"delve",name:"掘獄",en:"Delve / Sulphite",category:"removed",categoryLabel:"專屬輿圖群移除",status:"無綢帶｜玩法仍存在",summary:"掘獄專屬輿圖天賦群移除，玩法本體仍在。",old:[
+  {name:"聖甲蟲：硫酸",effect:"含尼科；地圖擁有者獲得 150% 更多硫酸。"},
+  {name:"聖甲蟲：煙毒硫酸",effect:"硫酸掉落的激怒雲霧；雲霧怪物物品數量 +50%。"}
+ ],nodes:[],diff:[],thread:"掘獄屬移除群，非十種主要綢帶。",note:"節點依（無專屬節點）。"},
+ {id:"heist",name:"劫盜",en:"Heist",category:"removed",categoryLabel:"專屬輿圖群移除",status:"無綢帶｜藏匿處改為指定地圖",summary:"劫盜專屬輿圖天賦群移除；藏匿處改指定地圖。",old:[],nodes:[],diff:[],thread:"劫盜屬移除群。",note:"PoEDB 聖甲蟲清單未列劫盜聖甲蟲。"},
+ {id:"ore",name:"礦床",en:"Ore Deposits / Kalguur",category:"secondary",categoryLabel:"次要聯盟機制",status:"無綢帶｜Atlas 投資",summary:"礦床為次要機制。",old:[
+  {name:"聖甲蟲：卡爾葛",effect:"額外 +1 個礦床。"},
+  {name:"聖甲蟲：守衛財寶卡爾葛",effect:"守衛礦床怪物至少為魔法。"},
+  {name:"聖甲蟲：精化卡爾葛",effect:"礦床改提供冶鍊金屬條。"},
+  {name:"聖甲蟲：富裕卡爾葛",effect:"每完成區域內另一座礦床，難度與獎勵 +15%。"}
+ ],nodes:[],diff:[],thread:"礦床為次要機制。",note:"節點依。"},
+ {id:"mercenary",name:"傭兵",en:"Mercenaries / Trarthus",category:"secondary",categoryLabel:"次要聯盟機制",status:"無綢帶｜Atlas 投資",summary:"傭兵為次要機制。",old:[
+  {name:"特拉特斯聖甲蟲",effect:"區域內含有 1 名傭兵。"},
+  {name:"聖甲蟲：萬惡傭兵",effect:"萬惡傭兵並由 2 名野生傭兵陪同。"},
+  {name:"聖甲蟲：聲名傭兵",effect:"裝備全為傳奇。"},
+  {name:"聖甲蟲：意外盟友傭兵",effect:"盜賊流亡者 50% 由野生傭兵陪同。"}
+ ],nodes:[],diff:[],thread:"傭兵為次要機制。",note:"節點依。"},
+ {id:"sentinel",name:"埋藏哨兵",en:"Buried Sentinel",category:"tertiary",categoryLabel:"第三類聯盟機制",status:"無綢帶｜自然出現率",summary:"埋藏哨兵為第三類機制。",old:[],nodes:[],diff:[],thread:"埋藏哨兵為第三類機制。",note:"節點依。"},
+ {id:"mirage",name:"遠古蜃景",en:"Ancient Mirage",category:"tertiary",categoryLabel:"第三類聯盟機制",status:"無綢帶｜自然出現率",summary:"遠古蜃景為第三類機制。",old:[],nodes:[],diff:[],thread:"遠古蜃景為第三類機制。",note:"原頁 mirage 改名為遠古蜃景。"},
+ {id:"wildwood",name:"翠綠荒林",en:"Viridian Wildwood",category:"tertiary",categoryLabel:"第三類聯盟機制",status:"無綢帶｜自然出現率",summary:"翠綠荒林為第三類機制。",old:[],nodes:[],diff:[],thread:"翠綠荒林為第三類機制。",note:"節點依。"},
+ {id:"divination",name:"命運卡",en:"Divination Cards",category:"generic",categoryLabel:"一般地圖相關機制",status:"一般地圖投資",summary:"命運卡為一般地圖投資。",old:[
+  {name:"聖甲蟲：迴廊命運",effect:"額外 8–12 群德瑞信徒。"},
+  {name:"聖甲蟲：富饒命運",effect:"額外 6–10 群命運之觸魔法怪物，掉卡機率 +1000%。"},
+  {name:"聖甲蟲：盜竊命運",effect:"最終頭目偷卡；擊敗後複製所有被偷取卡片。"}
+ ],nodes:[],diff:[],thread:"命運卡為一般投資。",note:"節點依。"},
+ {id:"cartography",name:"制圖／地圖掉落",en:"Cartography / Map Drops",category:"generic",categoryLabel:"一般地圖相關機制",status:"一般地圖投資",summary:"制圖為一般投資。",old:[
+  {name:"聖甲蟲：惡化製圖",effect:"每條地圖詞綴使掉落地圖數量 +10%。"},
+  {name:"聖甲蟲：風險製圖",effect:"額外 +2 隨機詞綴。"},
+  {name:"聖甲蟲：腐化製圖",effect:"非傳奇掉落地圖腐化並有 8 詞綴。"},
+  {name:"聖甲蟲：增生製圖",effect:"額外 8–12 群困難怪物；這些怪物掉圖數量 +300%。"}
+ ],nodes:[],diff:[],thread:"制圖為一般投資。",note:"節點依。"},
+ {id:"threads",name:"絲線／綢帶",en:"Threads",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充｜跨機制",summary:" 的「絲線」對應 HTML 的「綢帶」。",old:[],nodes:[],diff:[],thread:"絲線＝綢帶。",note:"依 新增頁面。"},
+ {id:"searing_exarch",name:"灼烙總督",en:"Searing Exarch",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充｜勢力天賦",summary:"灼烙總督勢力節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"eater_of_worlds",name:"吞噬天地",en:"Eater of Worlds",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充｜勢力天賦",summary:"吞噬天地勢力節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"atlas_anomaly",name:"輿圖異常",en:"Atlas Anomaly",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充",summary:"輿圖異常節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"atlas_memory",name:"輿圖記憶",en:"Atlas Memory",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充",summary:"輿圖記憶節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"currency",name:"金幣",en:"Gold",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充",summary:"金幣節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"unique_monsters",name:"傳奇怪物",en:"Unique Monsters",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充",summary:"傳奇怪物節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"labyrinth",name:"帝王迷宮",en:"Labyrinth",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充",summary:"帝王迷宮節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"generic_rare",name:"稀有怪物（通用）",en:"Rare Monsters",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充",summary:"通用稀有怪物節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"generic_magic",name:"魔法怪物（通用）",en:"Magic Monsters",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充",summary:"通用魔法怪物節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"},
+ {id:"extra",name:"其他通用天賦",en:"Other",category:"generic",categoryLabel:"一般地圖相關機制",status:" 補充",summary:" 中未歸類到主要機制的節點。",old:[],nodes:[],diff:[],thread:" 補充。",note:"依。"}
 ];
 
-const nav=document.getElementById("nav"), content=document.getElementById("content"), search=document.getElementById("search");
-let active=data[0].id;
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function table(rows,cls=""){
- return `<div class="table-wrap"><table class="${cls}"><thead><tr><th>${cls==="diff-table"?"比較項目":"名稱／天賦"}</th><th>${cls==="diff-table"?"舊版聖甲蟲":"效果"}</th>${cls==="diff-table"?"<th>3.30 方向</th><th>差異判讀</th>":""}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+/* 套用 ATLAS330 到 data */
+function applyAtlas330(){
+  for (const [id,a] of Object.entries(ATLAS330)){
+    const d = data.find(x=>x.id===id);
+    if (!d) continue;
+    const keystones = (a.keystones||[]).map(x=>({name:x.n,en:'',kind:'核心天賦',effect:x.e}));
+    const notables  = (a.notables||[]).map(x=>({name:x.n,en:'',kind:'關鍵天賦',effect:x.e}));
+    d.nodes = [...keystones, ...notables];
+    d.normalNodes = (a.normals||[]).map(([n,e,c])=>({name:n,effect:e,count:c}));
+  }
 }
+
+const nav=document.getElementById('nav'),content=document.getElementById('content'),search=document.getElementById('search'),filters=document.getElementById('filters');
+let active='abyss', activeFilter='all';
+document.getElementById('intro-primary').textContent=intro.primary;
+document.getElementById('intro-secondary').textContent=intro.secondary;
+document.getElementById('intro-tertiary').textContent=intro.tertiary;
+document.getElementById('intro-removed').textContent=intro.removed;
+document.getElementById('intro-generic').textContent=intro.generic;
+document.getElementById('intro-method').textContent=intro.patch+' '+intro.method;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function tableOld(rows){if(!rows||!rows.length)return '<div class="empty">PoEDB 聖甲蟲清單沒有此機制的專屬聖甲蟲。</div>';return `<div class="table-wrap"><table><thead><tr><th>PoEDB 繁中聖甲蟲名稱</th><th>舊版效果</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.effect)}</td></tr>`).join('')}</tbody></table></div>`;}
+function tableNodes(rows){if(!rows||!rows.length)return '<div class="empty"> 未列出此機制的專屬核心／關鍵天賦。</div>';return `<div class="table-wrap"><table class="node-table"><thead><tr><th>3.30 節點名稱（繁中）</th><th>節點類型</th><th> 效果翻譯</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}${r.en?`<div class="en">${esc(r.en)}</div>`:''}</td><td>${esc(r.kind||'')}</td><td>${esc(r.effect||'（未提供效果）')}</td></tr>`).join('')}</tbody></table></div>`;}
+function tableNormalNodes(rows){if(!rows||!rows.length)return '';return `<h3 style="margin-top:18px">普通天賦</h3><p class="section-desc">同名且同效果的小點已聚合；「×次數」為 中出現的節點數。</p><div class="table-wrap"><table class="node-table"><thead><tr><th>普通天賦名稱</th><th>次數</th><th> 效果翻譯</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>×${r.count}</td><td>${esc(r.effect||'（未提供效果）')}</td></tr>`).join('')}</tbody></table></div>`;}
+function tableDiff(rows){if(!rows||!rows.length)return '<div class="empty">附件不足以建立數值級比較。</div>';return `<div class="table-wrap"><table class="diff-table"><thead><tr><th>比較項目</th><th>舊版聖甲蟲</th><th>3.30 輿圖／機制</th><th>差異判讀</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.item)}</td><td>${esc(r.old)}</td><td>${esc(r.new)}</td><td>${esc(r.verdict)}</td></tr>`).join('')}</tbody></table></div>`;}
+function allText(d){return [d.name,d.en,d.summary,d.category,d.categoryLabel,d.status,d.thread,d.note,...(d.old||[]).flatMap(x=>[x.name,x.effect]),...(d.nodes||[]).flatMap(x=>[x.name,x.en,x.effect,x.kind]),...(d.normalNodes||[]).flatMap(x=>[x.name,x.effect]),...(d.diff||[]).flatMap(x=>[x.item,x.old,x.new,x.verdict])].join(' ').toLowerCase();}
 function renderNav(){
- const q=search.value.trim().toLowerCase();
- const items=data.filter(d=>(d.name+d.en+d.summary+" "+d.old.flat().join(" ")+" "+d.fresh.flat().join(" ")).toLowerCase().includes(q));
- nav.innerHTML=items.map((d,i)=>`<button class="${d.id===active?"active":""}" data-id="${d.id}"><span class="num">${String(data.indexOf(d)+1).padStart(2,"0")}</span><span>${d.icon} ${esc(d.name)}</span><span class="count">${esc(d.en)}</span></button>`).join("") || `<div class="empty">找不到符合的機制</div>`;
- nav.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{active=b.dataset.id;renderNav();renderContent();}));
+  const q=search.value.trim().toLowerCase();
+  const items=data.filter(d=>(activeFilter==='all'||d.category===activeFilter)&&(!q||allText(d).includes(q)));
+  nav.innerHTML=items.map(d=>`<button class="${d.id===active?'active':''}" data-id="${d.id}"><span class="num">${String(data.indexOf(d)+1).padStart(2,'0')}</span><i class="status-dot ${d.category}"></i><span>${esc(d.name)}</span><span class="count">${esc(d.en)}</span></button>`).join('')||'<div class="empty">找不到符合的機制</div>';
+  nav.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{active=b.dataset.id;renderNav();renderContent();}));
 }
 function renderContent(){
- const d=data.find(x=>x.id===active); if(!d){content.innerHTML='<div class="empty">請選擇機制</div>';return;}
- content.innerHTML=`
- <div class="hero"><div class="hero-top"><div class="icon">${d.icon}</div><div><h2>${esc(d.name)}</h2><div class="en">${esc(d.en)}</div></div></div>
- <p class="summary">${esc(d.summary)}</p><div class="tags"><span class="tag">舊版 Scarab</span><span class="tag">3.30 Threads／Atlas</span><span class="tag warn">翻譯基準：poedb.tw/tw</span></div></div>
- <section class="section"><h3>舊版聖甲蟲效果</h3>${table(d.old)}</section>
- <section class="section"><h3>3.30 機制／Threads／Atlas 方向</h3>${table(d.fresh)}</section>
- <section class="section"><h3>新舊差異對照</h3>${table(d.diff,"diff-table")}</section>
- <section class="section"><h3>重點判讀</h3><div class="analysis"><p>${esc(d.note)}</p></div></section>`;
+  const d=data.find(x=>x.id===active);
+  if(!d){content.innerHTML='<div class="empty">請選擇機制</div>';return;}
+  const tagClass=d.category;
+  const tagLabel={primary:'主要聯盟機制／綢帶加入',secondary:'次要聯盟機制／Atlas 投資',tertiary:'第三類機制／自然出現率',removed:'專屬輿圖天賦群移除',generic:'一般地圖相關機制'}[tagClass]||'';
+  content.innerHTML=`<div class="hero"><div class="hero-top"><div class="hero-icon">${iconFor(d.id)}</div><div><h2>${esc(d.name)}</h2><div class="en">${esc(d.en)}</div></div></div><p class="summary">${esc(d.summary)}</p><div class="tags"><span class="tag ${tagClass}">${esc(tagLabel)}</span><span class="tag">舊聖甲蟲：PoEDB 繁中</span><span class="tag">新節點： 3.30 天賦</span></div></div>
+<section class="section"><h3>舊版聖甲蟲效果（PoEDB 繁中）</h3>${tableOld(d.old)}</section>
+<section class="section"><h3>3.30 輿圖天賦節點</h3><p class="section-desc">核心天賦與關鍵天賦逐條列出；普通天賦於下方聚合顯示。</p>${tableNodes(d.nodes)}${tableNormalNodes(d.normalNodes)}</section>`;
 }
-search.addEventListener("input",()=>{renderNav();if(!nav.querySelector(`[data-id="${active}"]`)){const first=nav.querySelector("button");if(first){active=first.dataset.id;renderContent();}else content.innerHTML='<div class="empty">沒有符合搜尋條件的機制。</div>'; }});
-document.getElementById("mechanicCount").textContent=data.length;
+function iconFor(id){const icons={abyss:'◈',bestiary:'♞',essence:'✧',breach:'裂',expedition:'⚒',legion:'⚔',ritual:'♜',incursion:'⌛',betrayal:'♟',blight:'❖',ultimatum:'△',harvest:'✿',strongbox:'▣',shrine:'✚',exiles:'⚑',torment:'♨',beyond:'◉',delirium:'☁',delve:'⛏',heist:'♜',ore:'◆',mercenary:'⚒',sentinel:'▤',mirage:'◌',wildwood:'♣',divination:'▦',cartography:'▧',threads:'≋',searing_exarch:'🔥',eater_of_worlds:'◍',atlas_anomaly:'✺',atlas_memory:'▦',currency:'●',unique_monsters:'♛',labyrinth:'△',generic_rare:'◆',generic_magic:'◇',extra:'…'};return icons[id]||'•';}
+
+applyAtlas330();
+document.getElementById('mechanicCount').textContent=data.length;
+search.addEventListener('input',()=>{
+  renderNav();
+  if(!nav.querySelector(`[data-id="${active}"]`)){
+    const first=nav.querySelector('button');
+    if(first){active=first.dataset.id;renderContent();}
+    else content.innerHTML='<div class="empty">沒有符合搜尋條件的機制。</div>';
+  }
+});
+filters.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  activeFilter=b.dataset.filter;
+  filters.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));
+  renderNav();
+  const first=nav.querySelector('button');
+  if(first){active=first.dataset.id;renderContent();}
+  else content.innerHTML='<div class="empty">此分類沒有可顯示的機制。</div>';
+}));
 renderNav();renderContent();
 </script>
-</body>
-</html>
+</body></html>
