@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#11151c">
-<title>PoE 3.30｜輿圖機制 × Threads × Atlas 差異查詢（繁體中文 TW 校正版）</title>
+<title>PoE 3.30｜輿圖機制 × Threads × Atlas 差異查詢</title>
 <style>
 :root{
   --bg:#10141b;--panel:#191f29;--panel2:#202936;--line:#303b49;
@@ -107,7 +107,6 @@ td{color:#cbd4df}
    <div class="stat"><strong>3 欄對照</strong><span>舊版 Scarab / 3.30 方向 / 差異</span></div>
    <div class="stat"><strong>3.30</strong><span>目標版本</span></div>
   </div>
-  <div class="notice"><b>翻譯與框架說明：</b>3.30 中 Scarab 已完全移除，由 Threads 取代。本頁聖甲蟲譯名以 <b>PoEDB 繁體中文（TW）頁面</b>為基準，例如 Expedition 採台服譯名「<b>探險</b>」而非簡中「先祖秘藏」[reference:17]；部分機制名稱在繁中頁面仍使用與簡中相同的字形（如「致命貪婪」），但本頁一律以繁體呈現。實際效果、數值與版本請以 3.30 遊戲內資料及 PoEDB 當前頁面為準。</div>
   <div id="content" class="content" aria-live="polite"></div>
  </main>
 </div>
@@ -206,7 +205,7 @@ fresh:[
 ["軍團裂片複製機率(Legion Duplicate Splinter Chance)","永恆裂片有 5% 機率複製。"]],
 diff:[["額外軍團","額外 +1 場","由 Threads 添加遭遇","系統改變"],["士官","額外 +5","未確認直接對應","待核對"],["寶箱獎勵","20% 機率分散至怪物","寶箱額外提供隨機獎勵","效果改變"],["重複解凍","Eternal Conflict","Timeless Conflict：無計時與分裂","玩法重製"],["怪物獎勵","Treasures 分散獎勵","Logistical Support 額外獎勵","定向強化"],["碎片收益","未列出直接複製","Emblematic、Duplicate Splinter","新增"]],
 note:"Timeless Conflict 是遭遇流程改造，不是 Eternal Conflict 的逐字替代；分裂(Schism)機制已由 PoEWiki 確認。"},
-{id:"ritual",name:"驅靈祭壇",en:"Ritual",icon:"♜",summary:"3.30 驅靈祭壇出現奉獻(Tribute)與恩惠(Favor)取捨：可提高奉獻，但部分選項會限制重置或改變恩惠價格。",old:[
+{id:"ritual",name:"祭祀",en:"Ritual",icon:"♜",summary:"3.30 祭祀出現奉獻(Tribute)與恩惠(Favor)取捨：可提高奉獻，但部分選項會限制重置或改變恩惠價格。",old:[
 ["選擇性(Selectiveness)","前 2 次重置免費，額外增加 2 次重置機會。"],
 ["幽光(Wisps)","祭壇生成野林幽光(Wildwood Wisp)，附近玩家獲得 100% 額外奉獻。"],
 ["豐沛(Abundance)","祭壇提供的恩惠增加 100%。"],
@@ -214,9 +213,9 @@ note:"Timeless Conflict 是遭遇流程改造，不是 Eternal Conflict 的逐�
 fresh:[
 ["任意信條(Arbitrary Tenets)","祭壇恩惠的價格隨機變動，從減少 90% 到增加 80%。"],
 ["不變教條(Immutable Dogma)","無法重置恩惠，但祭壇獻祭怪物提供 100% 更多奉獻。"],
-["世俗焦點(Secular Focus)","可完全關閉地圖中的驅靈祭壇遭遇，並增加其他可關閉機制的出現機率。"]],
+["世俗焦點(Secular Focus)","可完全關閉地圖中的祭祀遭遇，並增加其他可關閉機制的出現機率。"]],
 diff:[["奉獻(Tribute)","Wisps +100%","Immutable Dogma +100% more","數值近似、條件不同"],["恩惠數量","Abundance +100%","未確認相同天賦","待核對"],["恩惠重置","前 2 次免費，另 +2 次","Immutable Dogma 禁止重置","方向相反"],["額外屍體怪物","Corpses 增加稀有屍體怪物","未確認完全相同對應","待核對"]],
-note:"新版驅靈祭壇有高奉獻與恩惠成本變化的取捨；不要把 100% more 與 100% increased 混為一談。"},
+note:"新版祭祀有高奉獻與恩惠成本變化的取捨；不要把 100% more 與 100% increased 混為一談。"},
 {id:"incursion",name:"穿越",en:"Incursion",icon:"⌛",summary:"舊版穿越聖甲蟲集中在增加怪物群、怪物稀有度與神殿物品化；3.30 需連同穿越之絲(Incursion Threads)及重製的阿茲瓦特神殿(Temple of Atzoatl)系統一起比較。",old:[
 ["穿越聖甲蟲(Incursion Scarab)","地圖必定出現阿瓦(Alva)。"],
 ["入侵之穿越聖甲蟲(Incursion Scarab of Invasion)","額外增加 12–16 群穿越怪物。"],
@@ -250,17 +249,17 @@ fresh:[
 ["特殊入侵","部分凋落路線可能受到盜賊流亡者(Rogue Exiles)入侵。"]],
 diff:[["凋落出現","聖甲蟲保證出現","由凋落之絲控制","系統改變"],["額外寶箱","Blooming 固定 +3","未確認直接對應","待核對"],["怪物難度與獎勵","Invigoration 強化波次","特殊路線／核心設計","玩法重製"],["特殊獎勵","Blightheart","新路線及核心獎勵","獎勵系統改變"]],
 note:"新版內容不宜只用「寶箱數量」比較，還要把路線、核心與首領收益納入。"},
-{id:"ultimatum",name:"致命貪婪",en:"Ultimatum",icon:"△",summary:"3.30 致命貪婪更偏向輪數與風險控制；舊版的催化劑(Catalysts)、銘文致命貪婪(Inscribed Ultimatum)定向獎勵是否保留需以當前資料為準。",old:[
-["致命貪婪聖甲蟲(Ultimatum Scarab)","地圖必定出現致命貪婪。"],
-["賄賂之致命貪婪聖甲蟲(Ultimatum Scarab of Bribing)","怪物經驗增加 150%，獎勵相當於額外完成 2 輪。"],
-["決鬥之致命貪婪聖甲蟲(Ultimatum Scarab of Dueling)","有可能時必定出現傳奇首領。"],
-["催化之致命貪婪聖甲蟲(Ultimatum Scarab of Catalysing)","獎勵只提供催化劑(Catalysts)。"],
-["銘文之致命貪婪聖甲蟲(Ultimatum Scarab of Inscription)","原本提供催化劑的獎勵改成銘文致命貪婪(Inscribed Ultimatums)。"]],
+{id:"ultimatum",name:"通牒",en:"Ultimatum",icon:"△",summary:"3.30 通牒更偏向輪數與風險控制；舊版的催化劑(Catalysts)、銘文通牒(Inscribed Ultimatum)定向獎勵是否保留需以當前資料為準。",old:[
+["通牒聖甲蟲(Ultimatum Scarab)","地圖必定出現通牒。"],
+["賄賂之通牒聖甲蟲(Ultimatum Scarab of Bribing)","怪物經驗增加 150%，獎勵相當於額外完成 2 輪。"],
+["決鬥之通牒聖甲蟲(Ultimatum Scarab of Dueling)","有可能時必定出現傳奇首領。"],
+["催化之通牒聖甲蟲(Ultimatum Scarab of Catalysing)","獎勵只提供催化劑(Catalysts)。"],
+["銘文之通牒聖甲蟲(Ultimatum Scarab of Inscription)","原本提供催化劑的獎勵改成銘文通牒(Inscribed Ultimatums)。"]],
 fresh:[
 ["毀滅賭注(Ruinous Wager)","怪物特殊技能會施加毀滅(Ruin)，累積 7 層失敗；怪物及詞綴造成的傷害降低 50%。"],
 ["嚴酷試煉(Gruelling Gauntlet)","無法選擇每輪施加的詞綴，最多持續 13 輪，最後一輪不會出現首領。"],
-["秩序僕從(Servant of Order)","可以完全關閉致命貪婪，將機制出現機率轉移至其他可關閉機制。"]],
-diff:[["額外輪數","Bribing 等價額外 2 輪獎勵","Gruelling Gauntlet 最多 13 輪","輪數上限改變"],["首領","Dueling 強制傳奇首領","Gruelling Gauntlet 最後一輪禁止首領","方向不同"],["催化劑獎勵","Catalysing 限定獎勵種類","3.30 是否保留需以當前資料核對","待核對"],["銘文致命貪婪","Inscription 轉換獎勵","3.30 是否保留需以當前資料核對","待核對"],["怪物傷害","無直接降低效果","Ruinous Wager -50% 傷害","新增生存選項"]],
+["秩序僕從(Servant of Order)","可以完全關閉通牒，將機制出現機率轉移至其他可關閉機制。"]],
+diff:[["額外輪數","Bribing 等價額外 2 輪獎勵","Gruelling Gauntlet 最多 13 輪","輪數上限改變"],["首領","Dueling 強制傳奇首領","Gruelling Gauntlet 最後一輪禁止首領","方向不同"],["催化劑獎勵","Catalysing 限定獎勵種類","3.30 是否保留需以當前資料核對","待核對"],["銘文通牒","Inscription 轉換獎勵","3.30 是否保留需以當前資料核對","待核對"],["怪物傷害","無直接降低效果","Ruinous Wager -50% 傷害","新增生存選項"]],
 note:"Gruelling Gauntlet 的「13 輪、最後無首領」在搜尋中未找到 3.30 的獨立反駁，但建議仍以遊戲內為準。新版的輪數、首領條件及毀滅機制是玩法調整，不應與舊版聖甲蟲效果直接等同。"},
 {id:"harvest",name:"豐收",en:"Harvest",icon:"✿",summary:"3.30 中豐收不再使用獨立果園，聖殿密園(Sacred Grove)直接生成於地圖；舊版確定複製生靈之力(Lifeforce)的效果改成機率複製。",old:[
 ["豐收聖甲蟲(Harvest Scarab)","地圖必定出現聖殿密園(Sacred Grove)。"],
