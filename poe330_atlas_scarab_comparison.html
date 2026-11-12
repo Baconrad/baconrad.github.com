@@ -685,7 +685,7 @@ function renderContent(){
   const tagClass=d.category;
   const tagLabel={primary:'主要聯盟機制／綢帶加入',secondary:'次要聯盟機制／Atlas 投資',tertiary:'第三類機制／自然出現率',removed:'專屬輿圖天賦群移除',generic:'一般地圖相關機制'}[tagClass]||'';
   content.innerHTML=`<div class="hero"><div class="hero-top"><div class="hero-icon">${iconFor(d.id)}</div><div><h2>${esc(d.name)}</h2><div class="en">${esc(d.en)}</div></div></div><p class="summary">${esc(d.summary)}</p><div class="tags"><span class="tag ${tagClass}">${esc(tagLabel)}</span><span class="tag">舊聖甲蟲：PoEDB 繁中</span><span class="tag">新節點： 3.30 天賦</span></div></div>
-<section class="section"><h3>舊版聖甲蟲效果（PoEDB 繁中）</h3>${tableOld(d.old)}</section>
+<section class="section"><h3>舊版聖甲蟲效果</h3>${tableOld(d.old)}</section>
 <section class="section"><h3>3.30 輿圖天賦節點</h3><p class="section-desc">核心天賦與關鍵天賦逐條列出；普通天賦於下方聚合顯示。</p>${tableNodes(d.nodes)}${tableNormalNodes(d.normalNodes)}</section>`;
 }
 function iconFor(id){const icons={abyss:'◈',bestiary:'♞',essence:'✧',breach:'裂',expedition:'⚒',legion:'⚔',ritual:'♜',incursion:'⌛',betrayal:'♟',blight:'❖',ultimatum:'△',harvest:'✿',strongbox:'▣',shrine:'✚',exiles:'⚑',torment:'♨',beyond:'◉',delirium:'☁',delve:'⛏',heist:'♜',ore:'◆',mercenary:'⚒',sentinel:'▤',mirage:'◌',wildwood:'♣',divination:'▦',cartography:'▧',threads:'≋',searing_exarch:'🔥',eater_of_worlds:'◍',atlas_anomaly:'✺',atlas_memory:'▦',currency:'●',unique_monsters:'♛',labyrinth:'△',generic_rare:'◆',generic_magic:'◇',extra:'…'};return icons[id]||'•';}
