@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#11151c">
+<title>PoE 3.30｜輿圖機制 × Threads × Atlas 差異查詢</title>
+<style>
+:root{
+  --bg:#10141b;--panel:#191f29;--panel2:#202936;--line:#303b49;
+  --text:#e8edf3;--muted:#a4afbd;--gold:#d7ad63;--gold2:#f0ce8c;
+  --green:#82c79b;--red:#e18a83;--blue:#83b8df;--purple:#b49add;
+  --shadow:0 14px 36px rgba(0,0,0,.28)
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#27303d 0,#141a23 42%,var(--bg) 78%);color:var(--text);font:15px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input{font:inherit}
+a{color:var(--gold2)}
+.top{padding:30px 22px 24px;border-bottom:1px solid var(--line);background:linear-gradient(120deg,rgba(215,173,99,.10),transparent 55%)}
+.wrap{max-width:1400px;margin:auto}
+.eyebrow{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:clamp(25px,4vw,39px);line-height:1.2;margin:8px 0 10px}
+.subtitle{color:var(--muted);max-width:850px;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pill{border:1px solid #475261;border-radius:999px;padding:4px 10px;color:#c6d0dc;font-size:12px;background:#161d26}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:22px;padding:22px;max-width:1444px;margin:auto}
+.sidebar{align-self:start;position:sticky;top:14px;background:rgba(25,31,41,.92);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);max-height:calc(100vh - 28px);overflow:auto}
+.side-title{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.12em;margin:2px 8px 10px}
+.search{width:100%;padding:11px 12px;border-radius:9px;border:1px solid #465363;background:#10161f;color:var(--text);outline:none;margin-bottom:12px}
+.search:focus{border-color:var(--gold)}
+.nav{display:grid;gap:5px}
+.nav button{display:flex;align-items:center;gap:10px;text-align:left;width:100%;border:1px solid transparent;border-radius:9px;padding:9px 10px;background:transparent;color:#cbd4df;cursor:pointer;transition:.15s}
+.nav button:hover{background:#252f3c}
+.nav button.active{background:linear-gradient(90deg,rgba(215,173,99,.17),rgba(215,173,99,.04));border-color:#80683f;color:#ffe0a5}
+.nav .num{font-size:11px;color:#8290a0;width:20px}
+.nav .count{margin-left:auto;color:#7f8b99;font-size:11px}
+main{min-width:0}
+.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat strong{display:block;font-size:22px;color:var(--gold2)}
+.stat span{color:var(--muted);font-size:12px}
+.notice{border:1px solid #6e5b37;background:rgba(215,173,99,.08);border-radius:12px;padding:13px 15px;color:#d9c7a6;margin-bottom:18px;font-size:13px}
+.content{background:rgba(25,31,41,.94);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);overflow:hidden}
+.hero{padding:23px 25px 18px;background:linear-gradient(115deg,rgba(215,173,99,.12),transparent 65%);border-bottom:1px solid var(--line)}
+.hero-top{display:flex;align-items:flex-start;gap:14px}
+.icon{font-size:30px;line-height:1.2}
+h2{font-size:26px;margin:0 0 3px}
+.en{color:var(--muted);font-size:13px}
+.summary{color:#c3ccd7;margin:13px 0 0;max-width:900px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.tag{font-size:11px;padding:3px 8px;border-radius:5px;background:#293441;color:#c4d0dd}
+.tag.good{color:var(--green);background:rgba(130,199,155,.1)}
+.tag.warn{color:var(--gold2);background:rgba(215,173,99,.12)}
+.section{padding:20px 25px;border-bottom:1px solid var(--line)}
+.section:last-child{border:0}
+.section h3{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.section h3:before{content:"";width:3px;height:17px;background:var(--gold);border-radius:2px}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:13px}
+th{background:#242e3a;color:#e5c98f;text-align:left;font-weight:700}
+th,td{padding:10px 12px;border-bottom:1px solid #303a47;vertical-align:top}
+tr:last-child td{border-bottom:0}
+td:first-child{color:#f0d9ac;font-weight:650;min-width:155px}
+td{color:#cbd4df}
+.diff-table td:nth-child(2){color:#c3ccd7}
+.diff-table td:nth-child(3){color:#c3e0cb}
+.status{display:inline-block;font-size:10px;border-radius:4px;padding:2px 6px;margin:2px 4px 2px 0;white-space:nowrap}
+.s-keep{background:rgba(130,199,155,.13);color:var(--green)}
+.s-change{background:rgba(131,184,223,.13);color:var(--blue)}
+.s-loss{background:rgba(225,138,131,.13);color:var(--red)}
+.s-check{background:rgba(215,173,99,.13);color:var(--gold2)}
+.analysis{padding:13px 15px;background:#151c25;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;color:#d3dbe4}
+.analysis p{margin:0}
+.empty{padding:35px;text-align:center;color:var(--muted)}
+.footer{max-width:1400px;margin:0 auto;padding:0 22px 30px;color:#8592a1;font-size:12px}
+.footer a{color:#d5b477}
+.mobile-select{display:none}
+@media(max-width:850px){
+ .layout{grid-template-columns:1fr;padding:14px}
+ .sidebar{position:static;max-height:none}
+ .nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .overview{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:560px){
+ .top{padding:24px 16px}.layout{padding:12px}
+ .overview{grid-template-columns:1fr 1fr}
+ .overview .stat:last-child{grid-column:span 2}
+ .hero,.section{padding:17px}
+ .nav{grid-template-columns:1fr 1fr}
+ .nav button{font-size:13px;padding:8px}
+ h2{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="wrap">
+  <div class="eyebrow">Path of Exile · Atlas Update 3.30 · Covens of Umbra</div>
+  <h1>輿圖機制 × Threads × Atlas 差異查詢</h1>
+  <p class="subtitle">3.30 已移除 Scarab 聖甲蟲，改以 Threads 添加機制，並重做輿圖天賦樹。選擇一個機制，查看舊版聖甲蟲效果、3.30 機制／天賦方向，以及已知差異。</p>
+  <div class="meta"><span class="pill">繁體中文</span><span class="pill">單一 HTML · 離線可用</span><span class="pill">可搜尋機制／詞綴名稱</span></div>
+ </div>
+</header>
+<div class="layout">
+ <aside class="sidebar">
+  <div class="side-title">機制列表 / MECHANICS</div>
+  <input id="search" class="search" type="search" placeholder="搜尋機制或效果…（例：複製、Boss）" autocomplete="off">
+  <nav id="nav" class="nav" aria-label="機制列表"></nav>
+ </aside>
+ <main>
+  <div class="overview">
+   <div class="stat"><strong id="mechanicCount">20</strong><span>可查詢機制</span></div>
+   <div class="stat"><strong>3 欄對照</strong><span>舊版 Scarab / 3.30 方向 / 差異</span></div>
+   <div class="stat"><strong>3.30</strong><span>目標版本</span></div>
+  </div>
+  <div class="notice"><b>重要框架說明：</b>3.30 中 Scarab 已完全移除，由 Threads 取代；部分舊聖甲蟲效果移至 Threads，部分被吸收進重做的 Atlas 天賦樹，部分機制本體也被重製。因此「舊版聖甲蟲 → 新版天賦」並非一對一替代關係。本頁為差異整理工具，實際效果、數值與版本請以 3.30 遊戲內資料及 PoEDB / PoEWiki 當前頁面為準。</div>
+  <div id="content" class="content" aria-live="polite"></div>
+ </main>
+</div>
+<div class="footer">
+ <p>參考資料：<a href="https://poedb.tw/us/atlas-skill-tree/" target="_blank" rel="noopener">PoEDB 3.30 Atlas Skill Tree</a> · <a href="https://poedb.tw/us/Scarab" target="_blank" rel="noopener">PoEDB Scarab（舊版）</a> · <a href="https://www.poewiki.net/wiki/Version_3.30.0" target="_blank" rel="noopener">PoEWiki 3.30.0</a></p>
+ <p>注意：此頁是差異整理工具，不是遊戲內建資料庫。若發現數值或詞綴有誤，請以最新版本資料修正。</p>
+</div>
+<script>
+const data = [
+{id:"abyss",name:"深淵",en:"Abyss",icon:"◈",summary:"舊版以額外深淵、怪物數量、Depths 與特殊怪物為主；3.30 深淵透過 Threads 添加，天賦方向涵蓋坑洞成長、Depths 機率及特殊獎勵。",old:[
+["Abyss Scarab","地圖額外增加 1 個深淵。"],
+["Abyss Scarab of Multitudes","深淵裂縫生成的怪物增加 100%。"],
+["Abyss Scarab of Crystals","非最後一個深淵坑洞關閉時產生 Abyssal Crystal。"],
+["Abyss Scarab of Descending","地圖保證出現 Abyssal Depths。"],
+["Abyss Scarab of the Consort","深淵坑洞會生成 Abyssal Consort。"]],
+fresh:[
+["Skittering Darkness","深淵有機會生成 Abyssal Skitterlocks，取代 Abyssal Troves。"],
+["Reactive Swarm","每關閉一個深淵坑洞，後續坑洞生成的怪物增加 4%。"],
+["Abyss Chance","地圖增加 8% 深淵出現機率。"],
+["Abyss Monster Count","深淵生成怪物數量增加 5%。"],
+["Awakened Depths","深淵通往 Abyssal Depths 的機率增加 100%。"],
+["Abyss Ulaman Chance","深淵生成 Ulaman 陣營怪物的機率增加 50%。"]],
+diff:[["額外深淵","舊聖甲蟲直接增加 1 個","透過 Threads 添加遭遇，天賦輔助","系統改變"],["怪物數量","固定增加 100%","依坑洞逐步增加 4%，另有怪物數量天賦","機制重製"],["Abyssal Depths","直接保證出現","通往 Depths 的機率 +100%","保證改機率"],["Crystal／Consort","有專屬聖甲蟲效果","目前列出的天賦未見完全相同效果","待核對"]],
+note:"深淵的怪物數量與遭遇控制方式改變。+100% 機率不等於保證出現，需留意基礎機率。"},
+{id:"bestiary",name:"野獸",en:"Bestiary",icon:"♞",summary:"野獸機制除了遭遇投資外，捕獲規則也有變動；3.30 中 Einhar 不再捕獲黃色野獸。",old:[
+["Bestiary Scarab","地圖必定出現 Einhar。"],["Bestiary Scarab of the Herd","若地圖有 Einhar，額外增加 5 隻紅色野獸。"],["Bestiary Scarab of Duplicating","複製地圖中捕獲的野獸。"]],
+fresh:[
+["Bestiary Threads","3.30 主要透過 Bestiary Threads 添加／強化遭遇。"],
+["黃色野獸規則變動","Einhar 不再捕獲黃色野獸；紅色野獸及 Boss 保留捕獲功能。"]],
+diff:[["Einhar 出現","聖甲蟲保證出現","改由 Threads 控制","系統改變"],["額外紅獸","Herd 固定 +5 隻","需核對 3.30 天賦與 Threads 數值","待核對"],["野獸複製","Duplicating 直接複製捕獲野獸","目前未確認有完全相同替代","待核對"],["黃色野獸捕獲","舊版可捕獲","3.30 規則已變更","規則改動"]],
+note:"不要把未找到對應效果直接當成確定移除；本機制的新版完整詞綴仍建議逐項核對。"},
+{id:"essence",name:"精髓",en:"Essence",icon:"✧",summary:"3.30 精髓投資偏向額外精髓、高階精髓、精髓裝備與 Boss 詞綴轉移；舊版固定增加怪物數量的效果不再完全相同。",old:[
+["Essence Scarab","額外增加 3 隻被精髓囚禁的怪物。"],["Essence Scarab of Ascent","精髓提升一個階級。"],["Essence Scarab of Stability","腐化精髓只能升級或轉換，不會產生其他結果。"],["Essence Scarab of Calcification","地圖原生稀有怪物會被精髓囚禁。"],["Essence Scarab of Adaptation","釋放怪物後，將隨機精髓詞綴賦予另一隻囚禁怪物。"]],
+fresh:[
+["Crystal Lattice","15% 機率讓囚禁怪物額外擁有 3 個精髓。"],["額外精髓機率","5% 機率讓囚禁怪物額外擁有 1 個精髓。"],["Crystal Resonance","地圖 Boss 獲得地圖中被擊殺囚禁怪物的一個隨機精髓詞綴；使用瓦爾寶珠時，精髓會被替換成該怪物身上的其中一種精髓。"],["Essence Chance","地圖有 5% 機率額外出現 1 隻被囚禁怪物。"],["Amplified Energies","囚禁怪物至少有 1 個最高可能階級的精髓。"],["Essence Rare Chance","囚禁怪物有 25% 機率額外掉落一件帶有精髓詞綴的稀有裝備。"],["Prolific Essence","地圖額外增加 1 隻被囚禁怪物。"]],
+diff:[["額外精髓怪物","+3 隻","額外 +1 隻，另有 5% 機率","固定數量下降"],["額外精髓數量","Adaptation 間接增加","15% 機率額外 +3 精髓","改為機率"],["精髓階級","Ascent 提升一階","至少一個最高可能階級","條件改變"],["腐化控制","Stability 限制腐化結果","Crystal Resonance 改變瓦爾寶珠結果","效果重製"],["稀有怪物精髓化","Calcification","未確認相同天賦","待核對"],["詞綴傳遞","Adaptation 傳遞至另一隻囚禁怪物","Crystal Resonance 將詞綴給地圖 Boss","作用對象改變"],["額外裝備","無直接對應","25% 機率額外掉落精髓稀有裝備","新增收益"]],
+note:"Crystal Lattice 的 15% 機率已由 PoEWiki 確認；Crystal Resonance 的瓦爾寶珠互動也與 PoEDB 一致。"},
+{id:"breach",name:"裂痕",en:"Breach",icon:"裂",summary:"3.30 裂痕重心轉向 Hive、Fortress、Wombgifts 與 Unstable Breach，透過 Threads 添加遭遇，天賦提供機率與獎勵方向。",old:[
+["Breach Scarab of the Hive","增加 Breach Hive。"],["Breach Scarab of Instability","額外增加 2 個 Unstable Breaches。"],["Breach Scarab of the Marshal","Unstable Breaches 內有 Boss；Hive 可通往 Hive Fortress。"],["Breach Scarab of the Incensed Swarm","Hive 後續波次難度及獎勵增加。"],["Breach Scarab of Resonant Cascade","每開啟一個 Unstable Breach，後續裂痕速度增加 10%，怪物難度及獎勵提高。"]],
+fresh:[
+["Fortified Dominance","Hive 通往 Fortress 的機率增加 40%；Breach Boss 有 25% 機率複製。"],["Breach Chance","地圖裂痕出現機率增加 10%。"],["Lavish Wombgift Chance","Lavish Wombgift 出現機率增加 25%。"],["Breach Hiveblood Quantity","Hiveblood 數量增加 5%。"],["Mysterious Wombgift Chance","Mysterious Wombgift 出現機率增加 25%。"],["Ancient Wombgift Chance","Ancient Wombgift 出現機率增加 25%。"],["Swelling Ranks","裂痕怪物群體規模增加 10%；Wombgift 數量增加 20%。"],["Massing Forces","地圖包含 Unstable Breach 時，有 10% 機率額外增加 2 個 Unstable Breaches。"],["Adaptive Reaction","Flammable Burrows 爆炸範圍 +100%；Hive 怪物每摧毀一個 Burrow 增加 Toughness；Hive 遭遇增加 Hiveblood 及 Wombgifts。"]],
+diff:[["額外裂痕","Instability 固定 +2","Massing Forces 10% 機率 +2","固定改機率"],["Hive／Fortress","聖甲蟲指定 Hive／Fortress","Fortress 機率 +40%","改為機率"],["Boss","Marshal 增加 Boss","Boss 有 25% 機率複製","用途不同"],["怪物群體","Incensed Swarm 強化後續波次","Swelling Ranks 群體規模 +10%","機制改變"],["裂痕速度","Resonant Cascade 加快","未確認相同替代","待核對"],["獎勵","波次難度與獎勵成長","Hiveblood、Wombgifts 等","獎勵系統重製"]],
+note:"Fortified Dominance 與 Massing Forces 的數值已由 PoEWiki 確認。"},
+{id:"expedition",name:"遠征",en:"Expedition",icon:"⚒",summary:"3.30 遠征可針對 Tujen、Dannig、Rog、Gwennen 投資，也能調整炸藥數量、範圍與引爆節奏。",old:[
+["Expedition Scarab","地圖必定出現遠征。"],["Runefinding","Runic Monster Marker 數量增加 100%。"],["Verisium Powder","炸藥數量增加 50%，爆炸範圍增加 80%。"],["Infusion","Logbook 必定有 4 個 Implicits；每引爆一個 Remnant，怪物難度及獎勵增加。"],["Archaeology","Remnant 額外增加 2 個前綴及後綴。"]],
+fresh:[
+["Extreme Archaeology","炸藥數量變成 1；爆炸範圍大幅增加；怪物生成時額外失去生命；炸藥放置距離增加。"],["Distinguished Demolitionist","炸藥範圍 +35%；炸藥數量 +20%。"],["Buried Knowledge","Logbook 掉落數量 +50%；Runic Monster Marker 數量 +20%。"],["Ancient Writings","Remnant 有 30% 機率額外增加一個後綴；遠征額外增加 2 個 Remnants。"],["Ancient Decay","遠征怪物生成時額外失去 20% 生命。"],["商人定向天賦","Tujen +90%、Dannig +65%、Rog +90%、Gwennen +90% 出現機率（依各自天賦）。"],["其他投資","遺物數量 +4%；商人重置貨幣掉落數量 +5%；引爆鏈速度可提高或降低 25%。"]],
+diff:[["Runic Marker","+100%","+20%","新版較低"],["炸藥數量","+50%","+20%（另有 Extreme Archaeology 改為 1 顆）","玩法改變"],["爆炸範圍","+80%","大幅增加（Extreme Archaeology）","新版上限較高"],["放置距離","無直接效果","增加","新增"],["Remnant","額外詞綴","30% 機率額外 +1 後綴，另 +2 Remnants","機制改變"],["Logbook","保證 4 Implicits","掉落數量 +50%","品質轉數量"],["商人選擇","未提供相同定向控制","可提高指定商人出現率","新增定向投資"]],
+note:"Extreme Archaeology 在部分版本曾調整「怪物生成時失去生命」的細節，3.30 實際數值建議以遊戲內或當前 PoEDB 為準。炸藥數量變成 1，不能只看範圍增加就判定全面增強。"},
+{id:"legion",name:"軍團",en:"Legion",icon:"⚔",summary:"3.30 軍團強調無倒數計時的解凍流程、怪物額外獎勵、寶箱獎勵與碎片收益。",old:[
+["Legion Scarab","額外增加 1 場軍團遭遇。"],["Officers","軍團額外增加 5 名 Sergeants。"],["Treasures","軍團寶箱有 20% 機率將獎勵分配給釋放的軍團怪物。"],["Eternal Conflict","軍團怪物可以重複解凍，每次增加難度及獎勵。"]],
+fresh:[
+["Timeless Conflict","軍團沒有倒數計時；解凍怪物及寶箱會逐步累積 Schism，完成後才開始遭遇。"],["Logistical Support","已有獎勵的軍團怪物有 10% 機率額外獲得 2 個獎勵；無獎勵者有 20% 機率獲得 1 個獎勵；額外獎勵提高怪物生命。"],["Pillaged Treasures","軍團寶箱額外提供一個隨機獎勵。"],["Emblematic","Timeless Splinter 有 0.3% 機率直接掉落 Timeless Emblem。"],["Legion Monolith Chance","地圖出現軍團機率增加 8%。"],["Legion General Chance","軍團出現 General 的機率增加 20%。"],["Legion Duplicate Splinter Chance","Timeless Splinter 有 5% 機率複製。"]],
+diff:[["額外軍團","額外 +1 場","由 Threads 添加遭遇","系統改變"],["Sergeants","額外 +5","未確認直接對應","待核對"],["寶箱獎勵","20% 機率分散至怪物","寶箱額外提供隨機獎勵","效果改變"],["重複解凍","Eternal Conflict","Timeless Conflict：無計時與 Schism","玩法重製"],["怪物獎勵","Treasures 分散獎勵","Logistical Support 額外獎勵","定向強化"],["碎片收益","未列出直接複製","Emblematic、Duplicate Splinter","新增"]],
+note:"Timeless Conflict 是遭遇流程改造，不是 Eternal Conflict 的逐字替代；Schism 機制已由 PoEWiki 確認。"},
+{id:"ritual",name:"祭祀",en:"Ritual",icon:"♜",summary:"3.30 祭祀出現 Tribute 與 Favor 取捨：可提高 Tribute，但部分選項會限制重置或改變 Favor 價格。",old:[
+["Selectiveness","前 2 次重置免費，額外增加 2 次重置機會。"],["Wisps","祭壇生成 Wildwood Wisp，附近玩家獲得 100% 額外 Tribute。"],["Abundance","祭祀提供的 Favours 增加 100%。"],["Corpses","額外增加一隻稀有的可物品化屍體怪物。"]],
+fresh:[
+["Arbitrary Tenets","祭壇 Favor 的價格隨機變動，從減少 90% 到增加 80%。"],["Immutable Dogma","無法重置 Favor，但祭壇獻祭怪物提供 100% 更多 Tribute。"],["Secular Focus","可完全關閉地圖中的 Ritual 遭遇，並增加其他可關閉機制的出現機率。"]],
+diff:[["Tribute","Wisps +100%","Immutable Dogma +100% more","數值近似、條件不同"],["Favor 數量","Abundance +100%","未確認相同天賦","待核對"],["Favor 重置","前 2 次免費，另 +2 次","Immutable Dogma 禁止重置","方向相反"],["額外屍體怪物","Corpses 增加稀有屍體怪物","未確認完全相同對應","待核對"]],
+note:"新版祭祀有高 Tribute 與 Favor 成本變化的取捨；不要把 100% more 與 100% increased 混為一談。"},
+{id:"incursion",name:"穿越",en:"Incursion",icon:"⌛",summary:"舊版穿越聖甲蟲集中在增加怪物群、怪物稀有度與 Temple 物品化；3.30 需連同 Incursion Threads 及重製的 Temple 系統一起比較。",old:[
+["Incursion Scarab","地圖必定出現 Alva。"],["Invasion","額外增加 12–16 群穿越怪物。"],["Champions","35% 機率讓穿越怪物至少為魔法怪物；群體規模 +15%。"],["Timelines","擊殺最終 Architect 後掉落物品化 Temple，房間階級隨機生成。"]],
+fresh:[
+["Incursion Threads","3.30 主要透過 Incursion Threads 添加／強化遭遇。"],["Temple 重製","Atziri 已移入 Temple of Atzoatl，穿越相關獎勵與房間規則有較大變動，需以 3.30 完整資料核對。"]],
+diff:[["Alva 出現","Scarab 保證出現","由 Incursion Thread 控制","系統改變"],["額外怪物群","+12–16 群","未確認直接對應數值","待核對"],["怪物稀有度","35% 機率至少魔法怪物","未確認相同效果","待核對"],["群體規模","+15%","未確認相同數值","待核對"],["物品化 Temple","Timelines 使其掉落","Temple 系統本身已重製","機制本體變動"]],
+note:"3.30 中 Atziri 移入 Temple，穿越機制本體有重大調整；不把缺少資料解讀成確定移除。"},
+{id:"betrayal",name:"背叛",en:"Betrayal",icon:"♟",summary:"舊版著重 Jun 遭遇、Allflame 怪物群、援軍及審問保階；3.30 也有新的 Allflame／Veiled Item 獎勵方向，並調整安全屋獎勵。",old:[
+["Betrayal Scarab","地圖必定出現 Jun。"],["Allflame","被 Allflame Ember 替換的怪物群增加 75%。"],["Reinforcements","Syndicate 成員有 50% 機率獲得援軍。"],["Unbreaking","審問 Syndicate 成員時，50% 機率不降低階級。"]],
+fresh:[
+["Betrayal Threads","3.30 主要透過 Betrayal Threads 添加／強化遭遇。"],["安全屋獎勵調整","Intervention Safehouse 成員改為獎勵特定 unique 類型（如 unique axes）的 trapped stashes。"],["Allflame 相關","Allflame Ember 改為直接套用於地圖的通貨；Veiled Items 有機會以 Allflames 形式掉落，需核對正式詞綴及條件。"]],
+diff:[["Jun 出現","保證出現","由 Betrayal Thread 控制","系統改變"],["Allflame 怪物群","+75% 替換數量","Allflame 改為地圖通貨；獎勵方向改變","獎勵方向改變"],["援軍","50% 機率","未確認完全相同天賦","待核對"],["審問不降階","50% 機率","未確認完全相同天賦","待核對"],["Veiled Item","非上述聖甲蟲核心效果","安全屋獎勵類型改變；Allflame 新用途","新增／重製"]],
+note:"Allflame 新用途不等於舊版 Allflame Scarab 的 +75% 怪物群效果；3.30 中 Allflame Ember 已變成地圖通貨。"},
+{id:"blight",name:"凋落",en:"Blight",icon:"❖",summary:"3.30 凋落資料提及特殊路線、強化 Blight Cores 與新小 Boss；舊版則以寶箱數量與波次強化為主。",old:[
+["Blight Scarab","地圖必定出現凋落。"],["Blooming","額外增加 3 個凋落寶箱。"],["Invigoration","凋落怪物每波獲得更多生命及傷害，獎勵提高。"],["Blightheart","凋落遭遇額外生成特殊獎勵。"]],
+fresh:[
+["Blight Threads","3.30 主要透過 Blight Threads 添加／強化遭遇。"],["Mycotic Lanes","特殊凋落路線，提供不同獎勵方向。"],["強化 Blight Cores","可召喚新的小 Boss。"],["特殊入侵","部分凋落路線可能受到 Rogue Exiles 入侵。"]],
+diff:[["凋落出現","Scarab 保證出現","由 Blight Thread 控制","系統改變"],["額外寶箱","Blooming 固定 +3","未確認直接對應","待核對"],["怪物難度與獎勵","Invigoration 強化波次","特殊路線／核心設計","玩法重製"],["特殊獎勵","Blightheart","新路線及核心獎勵","獎勵系統改變"]],
+note:"新版內容不宜只用「寶箱數量」比較，還要把路線、核心與 Boss 收益納入。"},
+{id:"ultimatum",name:"終極試煉",en:"Ultimatum",icon:"△",summary:"3.30 Ultimatum 更偏向輪數與風險控制；舊版的 Catalyst、Inscribed Ultimatum 定向獎勵是否保留需以當前資料為準。",old:[
+["Ultimatum Scarab","地圖必定出現 Ultimatum。"],["Bribing","怪物經驗增加 150%，獎勵相當於額外完成 2 輪。"],["Dueling","有可能時必定出現 Unique Boss。"],["Catalysing","獎勵只提供 Catalysts。"],["Inscription","原本提供 Catalysts 的獎勵改成 Inscribed Ultimatums。"]],
+fresh:[
+["Ruinous Wager","怪物特殊技能會施加 Ruin，累積 7 層失敗；怪物及詞綴造成的傷害降低 50%。"],["Gruelling Gauntlet","無法選擇每輪施加的詞綴，最多持續 13 輪，最後一輪不會出現 Boss。"],["Servant of Order","可以完全關閉 Ultimatum，將機制出現機率轉移至其他可關閉機制。"]],
+diff:[["額外輪數","Bribing 等價額外 2 輪獎勵","Gruelling Gauntlet 最多 13 輪","輪數上限改變"],["Boss","Dueling 強制 Unique Boss","Gruelling Gauntlet 最後一輪禁止 Boss","方向不同"],["Catalyst 獎勵","Catalysing 限定獎勵種類","3.30 是否保留需以當前資料核對","待核對"],["Inscribed Ultimatum","Inscription 轉換獎勵","3.30 是否保留需以當前資料核對","待核對"],["怪物傷害","無直接降低效果","Ruinous Wager -50% 傷害","新增生存選項"]],
+note:"Gruelling Gauntlet 的「13 輪、最後無 Boss」在搜尋中未找到 3.30 的獨立反駁，但建議仍以遊戲內為準。新版的輪數、Boss 條件及 Ruin 機制是玩法調整，不應與舊版聖甲蟲效果直接等同。"},
+{id:"harvest",name:"豐收",en:"Harvest",icon:"✿",summary:"3.30 中 Harvest 不再使用獨立果園，Sacred Flora 直接生成於地圖；舊版確定複製 Lifeforce 的效果改成機率複製。",old:[
+["Harvest Scarab","地圖必定出現 Sacred Grove。"],["Doubling","Lifeforce 複製，怪物生命增加 100%。"],["Cornucopia","每種顏色最多額外增加一個 Tier 4 種子。"]],
+fresh:[
+["Call of the Grove","Sacred Grove 出現機率 +30%。"],["Bountiful Harvest","怪物經驗 +200%；植物有 10% 機率額外生成一隻怪物。"],["Heart of the Grove","Tier 4 植物機率 +60%；10% 機率未選擇的作物不枯萎。"],["Bumper Crop","50% 機率讓 Sacred Grove 額外出現一次 Harvest。"],["Doubling Season","Lifeforce 有 10% 機率複製。"],["Vivid／Wild／Primal Drought","分別降低黃色／紫色／藍色植物出現機率 25%。"]],
+diff:[["Harvest 出現","保證出現","出現機率 +30%；不再有獨立果園","保證改機率 + 機制重製"],["Lifeforce 複製","直接複製","10% 機率複製","確定改機率"],["Tier 4 種子","每種最多額外 +1","Tier 4 機率 +60%","計算方式改變"],["額外 Harvest","無直接對應","50% 機率額外一次","新增"]],
+note:"Doubling 舊版是直接複製，3.30 的 Doubling Season 為 10% 機率（已由 PoEWiki 確認）；需注意兩者收益期望值差異。"},
+{id:"strongbox",name:"保險箱",en:"Strongbox / Ambush",icon:"▣",summary:"3.30 保險箱投資轉向特定箱種及掉落複製；舊版的額外箱數、重開與詞綴強化未必有直接替代。",old:[
+["Ambush Scarab","額外增加 4 個 Strongboxes。"],["Hidden Compartments","15% 機率可以重新開啟。"],["Potency","保險箱詞綴效果 +75%。"],["Containment","大量額外保險箱，並讓地圖怪物埋伏。"],["Discernment","增加稀有種類保險箱出現機率。"]],
+fresh:[
+["Vault of Mysteries","保險箱掉落的命運卡複製。"],["Concealed Logistics","保險箱掉落的地圖複製。"],["Diviner's Strongbox Chance","Diviner's Strongbox 出現機率 +30%。"],["Cartographer's Strongbox Chance","Cartographer's Strongbox 出現機率 +30%。"],["Arcanist's／Artisan's Chance","Arcanist's、Artisan's 出現機率各 +30%。"],["Backup Cache","保險箱掉落的通貨複製。"]],
+diff:[["額外保險箱","固定 +4","3.30 額外遭遇來源需另核對","待核對"],["重複開啟","15% 機率","3.30 有 10% 機率可重新開啟的節點（Secret Compartments）","數值下降"],["詞綴效果","+75%","3.30 是否有直接對應需核對","待核對"],["特定箱種","提高稀有種類機率","分別指定多種箱子 +30%","定向化"],["獎勵複製","無直接對應","命運卡、地圖、通貨複製","新增"]],
+note:"Vault of Mysteries 的命運卡複製已由 PoEWiki 確認；Secret Compartments 為 10% 重開機率，與舊版 Hidden Compartments 的 15% 不同。"},
+{id:"shrine",name:"神殿",en:"Shrine / Domination",icon:"✚",summary:"3.30 神殿更重視 Buff 效果與特殊 Shrine 類型，而非只增加 Shrine 數量。",old:[
+["Domination Scarab","額外增加 3 個 Shrine。"],["Apparitions","額外增加 2 個 Apparition Shrines。"],["Evolution","額外增加 1 個 Evolving Shrine。"],["Terrors","Shrine 由 Atlas Boss 守護。"]],
+fresh:[
+["Domination Shrine Chance","20% 機率額外增加 Shrine。"],["All That Glitters","10% 機率生成 Covetous Shrine。"],["Syncretism","Shrine Buff 效果 +30%，並額外賦予隨機 Shrine 效果。"],["Domination Shrine Effect","Shrine Buff 效果 +20%。"],["Drawn to Power","50% 機率額外增加一群守護怪物，且至少有一群魔法怪物。"]],
+diff:[["Shrine 數量","固定 +3","20% 機率額外增加","固定改機率"],["特殊 Shrine","Apparition、Evolving","Covetous Shrine 機率","種類改變"],["Buff 效果","無上述直接效果","+20% 或 +30%","新增"],["守護怪物","Atlas Boss 守護 Shrine","額外守護怪物群","條件改變"]],
+note:"Syncretism 的 +30% 效果與隨機額外 Shrine 效果已由 PoEDB / PoEWiki 確認；新舊版特殊 Shrine 名稱與效果不同，不能視為同一種遭遇。"},
+{id:"exiles",name:"流亡者",en:"Rogue Exiles / Anarchy",icon:"⚑",summary:"3.30 流亡者可投資大量生成、額外通貨與獎勵；舊版則有巨型流亡者及成對出現等特殊效果。",old:[
+["Anarchy Scarab","額外增加 5 隻 Rogue Exiles。"],["Gigantification","30% 機率將 Wild Rogue Exiles 替換為 Rogue Giant。"],["Partnership","50% 機率讓 Wild Rogue Exiles 成對出現。"],["Exceptional","額外增加 1 隻 Exceptional Rogue Exile。"]],
+fresh:[
+["Unexpected Stranger","額外增加 1 隻 Rogue Exile。"],["Exile Currency Chance","Rogue Exile 有 5% 機率額外掉落通貨。"],["Royal Guard","20% 機率讓地圖 Boss 有兩隻 Rogue Exile Bodyguards。"],["Rogue Trader","Wild Rogue Exiles 額外獎勵機率 +50%，但生命增加 100%。"],["Additional Exile Spawn","25% 機率額外增加 1 隻 Rogue Exile。"],["Exiled Will","Wild Rogue Exiles 被 Tormented Spirit 附身。"],["Ruckus","8% 機率額外生成 20 隻 Rogue Exiles。"],["Exile Pair Chance","10% 機率讓 Wild Rogue Exiles 成對出現。"]],
+diff:[["額外流亡者","+5","+1 或 25% 機率 +1","數量投資改變"],["大量生成","無相同固定效果","8% 機率 +20","新增爆發"],["成對出現","50% 機率","10% 機率","機率下降"],["巨型流亡者","30% 機率","未找到直接對應","待核對"],["特殊流亡者","額外 Exceptional","Boss Bodyguards","效果改變"],["額外獎勵","無直接對應","額外獎勵機率 +50%","新增"]],
+note:"Ruckus 的 8%／20 隻已由 PoEWiki 確認；3.30 中 Exceptional Rogue Exiles 不再有鏡像或稀有度升級獎勵。"},
+{id:"torment",name:"折磨",en:"Torment",icon:"♨",summary:"3.30 折磨偏向提高附身稀有怪物數量與 Spirit 持續時間；舊版可增加更多 Spirit 並改變種類。",old:[
+["Torment Scarab","額外增加 4 隻 Tormented Spirits，並有 10% 機率從被附身怪物釋放 Spirit。"],["Peculiarity","替換成特殊種類的 Tormented Spirits。"],["Possession","稀有怪物有 25% 機率被最多 3 隻 Spirits 附身。"]],
+fresh:[
+["Paranormal Meeting","額外增加 1 隻 Tormented Spirit。"],["Tormented Spirit Duration","Spirit 持續時間增加。"],["Tormented Spirit Chance","10% 機率額外增加 1 隻 Spirit。"],["Unrelenting Torment","地圖 Boss 有 10% 機率被 Spirits 包圍，並提高特殊 Spirit 出現機率。"],["Seance","最多 5 隻稀有怪物被附身，牠們的 Minions 也會受到影響。"]],
+diff:[["額外 Spirit","+4","+1，另有 10% 機率 +1","數量下降"],["特殊 Spirit","Peculiarity 替換種類","提高特殊 Spirit 出現機率","方式改變"],["附身怪物","25% 機率最多 3 隻","Seance 最多 5 隻稀有怪物","上限提高"],["Boss 附身","未列出直接效果","Boss 有 10% 機率被 Spirits 包圍","新增"]],
+note:"Seance、Paranormal Meeting、Tormented Spirit Chance 等核心效果已由 PoEWiki 確認；新版 Seance 的附身上限與舊版 Possession 的機率型效果不同。"},
+{id:"beyond",name:"異界 / Beyond",en:"Beyond",icon:"◉",summary:"舊版有多種 Beyond Scarab；3.30 主要透過輿圖機制及 Demonic Evocators 等新方式回歸。",old:[
+["Beyond Scarab 系列","包含增加 Beyond 遭遇及不同 Beyond 怪物／獎勵方向的聖甲蟲。"]],
+fresh:[
+["Demonic Evocators","Beyond 透過 Demonic Evocators 回歸地圖；Beyond Boss 可揭露 demonic realms 入口。"],["Atlas Passive","3.30 有 Beyond 相關輿圖投資；詳細詞綴應以當前天賦樹核對。"]],
+diff:[["遭遇與獎勵","多種 Scarab 分別控制","透過 Demonic Evocators 及 Atlas 投資","系統改變"]],
+note:"3.30 中 Beyond 以 Demonic Evocators 等形式回歸，並非單純的聖甲蟲替代。本頁未列出每一種舊聖甲蟲及新節點的逐項數值，避免填入未核實內容。"},
+{id:"delirium",name:"譫妄",en:"Delirium",icon:"☁",summary:"舊版 Delirium Scarab 有多種不同投資方向；3.30 中 Delirium Orbs 可直接重鑄稀有地圖並附加 Delirious 詞綴。",old:[
+["Delirium Scarab 系列","包含額外遭遇及不同譫妄效果的聖甲蟲。"]],
+fresh:[
+["Delirium Orbs","可重鑄稀有地圖，附加 5%–100% 的 Delirious 詞綴，每 20% 增加一個獎勵。"],["Atlas Passive","3.30 有 Delirium 相關天賦投資；詳細詞綴待逐項核對。"]],
+diff:[["遭遇與獎勵","多種 Scarab 分別控制","Delirium Orbs 直接改造地圖；Atlas 投資輔助","系統改變"]],
+note:"Delirium Orbs 的改動已由 3.30 補丁說明確認；需要再從舊版 Scarab 完整詞綴與新版天賦樹逐條核對後，才能提供數值級比較。"},
+{id:"delve",name:"挖礦",en:"Delve / Sulphite",icon:"⛏",summary:"Delve 本體仍可遊玩，但 3.30 中 Delve 專屬的 Atlas Passive 天賦群已移除；Sulphite 資源改為出現在特定地圖。",old:[
+["Sulphite Scarab 系列","增加地圖 Sulphite 收益或提供相關效果（依舊版詞綴）。"]],
+fresh:[
+["Delve 天賦群移除","3.30 中 Delve 專屬 Atlas 天賦群已移除；Delve 本體仍可透過 Sulphite 進入 Mine。"]],
+diff:[["Delve 遊戲內容","可透過 Sulphite 進入 Mine","Delve 本體仍存在；專屬 Atlas 投資已移除","天賦投資變動"],["資源獲取","Sulphite Scarab 等","Sulphite 出現在特定地圖","系統改變"]],
+note:"重點是「Delve 專屬輿圖天賦」被移除，不是 Delve 內容被刪除。不要混淆機制本體與天賦投資。"},
+{id:"heist",name:"劫盜",en:"Heist",icon:"♜",summary:"Heist 本身仍是獨立玩法，但 3.30 中其專屬 Atlas Passive 投資群已移除；Smuggler's Caches 出現在特定地圖。",old:[
+["Heist 相關投資","舊版有地圖側的 Heist 相關輿圖投資；此處不將其誤稱為 Scarab。"]],
+fresh:[
+["Heist 天賦群移除","3.30 中 Heist 專屬 Atlas 天賦群已移除；Heist 本體仍可遊玩。"],["資源獲取","Smuggler's Caches 出現在特定地圖。"]],
+diff:[["Heist 遊戲內容","Heist 合約與藍圖玩法存在","玩法本體仍存在；專屬 Atlas 投資已移除","天賦投資變動"]],
+note:"此項是補充機制，不屬於舊版 Scarab 與新版 Threads 的一對一比較；重點同樣是「天賦群移除」而非「機制刪除」。"}
+];
+
+const nav=document.getElementById("nav"), content=document.getElementById("content"), search=document.getElementById("search");
+let active=data[0].id;
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function table(rows,cls=""){
+ return `<div class="table-wrap"><table class="${cls}"><thead><tr><th>${cls==="diff-table"?"比較項目":"名稱／天賦"}</th><th>${cls==="diff-table"?"舊版聖甲蟲":"效果"}</th>${cls==="diff-table"?"<th>3.30 方向</th><th>差異判讀</th>":""}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function renderNav(){
+ const q=search.value.trim().toLowerCase();
+ const items=data.filter(d=>(d.name+d.en+d.summary+" "+d.old.flat().join(" ")+" "+d.fresh.flat().join(" ")).toLowerCase().includes(q));
+ nav.innerHTML=items.map((d,i)=>`<button class="${d.id===active?"active":""}" data-id="${d.id}"><span class="num">${String(data.indexOf(d)+1).padStart(2,"0")}</span><span>${d.icon} ${esc(d.name)}</span><span class="count">${esc(d.en)}</span></button>`).join("") || `<div class="empty">找不到符合的機制</div>`;
+ nav.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{active=b.dataset.id;renderNav();renderContent();}));
+}
+function renderContent(){
+ const d=data.find(x=>x.id===active); if(!d){content.innerHTML='<div class="empty">請選擇機制</div>';return;}
+ content.innerHTML=`
+ <div class="hero"><div class="hero-top"><div class="icon">${d.icon}</div><div><h2>${esc(d.name)}</h2><div class="en">${esc(d.en)}</div></div></div>
+ <p class="summary">${esc(d.summary)}</p><div class="tags"><span class="tag">舊版 Scarab</span><span class="tag">3.30 Threads／Atlas</span><span class="tag warn">部分資料待核對</span></div></div>
+ <section class="section"><h3>舊版聖甲蟲效果</h3>${table(d.old)}</section>
+ <section class="section"><h3>3.30 機制／Threads／Atlas 方向</h3>${table(d.fresh)}</section>
+ <section class="section"><h3>新舊差異對照</h3>${table(d.diff,"diff-table")}</section>
+ <section class="section"><h3>重點判讀</h3><div class="analysis"><p>${esc(d.note)}</p></div></section>`;
+}
+search.addEventListener("input",()=>{renderNav();if(!nav.querySelector(`[data-id="${active}"]`)){const first=nav.querySelector("button");if(first){active=first.dataset.id;renderContent();}else content.innerHTML='<div class="empty">沒有符合搜尋條件的機制。</div>'; }});
+document.getElementById("mechanicCount").textContent=data.length;
+renderNav();renderContent();
+</script>
+</body>
+</html>
