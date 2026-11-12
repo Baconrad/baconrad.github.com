@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#11151c">
-<title>PoE 3.30｜輿圖機制 × Threads × Atlas 差異查詢（翻譯校正版）</title>
+<title>PoE 3.30｜輿圖機制 × Threads × Atlas 差異查詢（繁體中文 TW 校正版）</title>
 <style>
 :root{
   --bg:#10141b;--panel:#191f29;--panel2:#202936;--line:#303b49;
@@ -13,7 +13,7 @@
   --shadow:0 14px 36px rgba(0,0,0,.28)
 }
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 50% -20%,#27303d 0,#141a23 42%,var(--bg) 78%);color:var(--text);font:15px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#27303d 0,#141a23 42%,var(--bg) 78%);color:var(--text);font:15px/1.65 system-ui,-apple-system,"Segoe UI","Microsoft JhengHei",sans-serif}
 button,input{font:inherit}
 a{color:var(--gold2)}
 .top{padding:30px 22px 24px;border-bottom:1px solid var(--line);background:linear-gradient(120deg,rgba(215,173,99,.10),transparent 55%)}
@@ -91,14 +91,14 @@ td{color:#cbd4df}
  <div class="wrap">
   <div class="eyebrow">Path of Exile · Atlas Update 3.30 · Covens of Umbra</div>
   <h1>輿圖機制 × Threads × Atlas 差異查詢</h1>
-  <p class="subtitle">3.30 已移除 Scarab 聖甲蟲，改以 Threads 添加機制，並重做輿圖天賦樹。本頁以 PoEDB Scarab 頁面為翻譯基準，聖甲蟲名稱採用繁中譯名，不確定或遊戲專有用詞以「中文(英文)」呈現。</p>
-  <div class="meta"><span class="pill">繁體中文</span><span class="pill">翻譯基準：PoEDB Scarab</span><span class="pill">專有名詞中英並列</span></div>
+  <p class="subtitle">3.30 已移除 Scarab 聖甲蟲，改以 Threads 添加機制，並重做輿圖天賦樹。本頁以 <b>PoEDB 繁體中文（TW）</b> 頁面為翻譯基準，聖甲蟲名稱貼近繁中資料庫實際寫法，不確定或版本差異以「中文(英文)」並列。</p>
+  <div class="meta"><span class="pill">繁體中文（TW）</span><span class="pill">翻譯基準：poedb.tw/tw</span><span class="pill">專有名詞中英並列</span></div>
  </div>
 </header>
 <div class="layout">
  <aside class="sidebar">
   <div class="side-title">機制列表 / MECHANICS</div>
-  <input id="search" class="search" type="search" placeholder="搜尋機制或效果…（例：複製、Boss）" autocomplete="off">
+  <input id="search" class="search" type="search" placeholder="搜尋機制或效果…（例：複製、首領）" autocomplete="off">
   <nav id="nav" class="nav" aria-label="機制列表"></nav>
  </aside>
  <main>
@@ -107,13 +107,13 @@ td{color:#cbd4df}
    <div class="stat"><strong>3 欄對照</strong><span>舊版 Scarab / 3.30 方向 / 差異</span></div>
    <div class="stat"><strong>3.30</strong><span>目標版本</span></div>
   </div>
-  <div class="notice"><b>翻譯與框架說明：</b>3.30 中 Scarab 已完全移除，由 Threads 取代；聖甲蟲譯名以 PoEDB 繁中頁面為基準，部分機制名稱採用繁中客戶端正式譯名（如 Expedition → 先祖秘藏、Ultimatum → 致命貪婪、Torment → 苦痛、Beyond → 超越、Delve → 掘獄），與口語俗稱不同。實際效果、數值與版本請以 3.30 遊戲內資料及 PoEDB 當前頁面為準。</div>
+  <div class="notice"><b>翻譯與框架說明：</b>3.30 中 Scarab 已完全移除，由 Threads 取代。本頁聖甲蟲譯名以 <b>PoEDB 繁體中文（TW）頁面</b>為基準，例如 Expedition 採台服譯名「<b>探險</b>」而非簡中「先祖秘藏」[reference:17]；部分機制名稱在繁中頁面仍使用與簡中相同的字形（如「致命貪婪」），但本頁一律以繁體呈現。實際效果、數值與版本請以 3.30 遊戲內資料及 PoEDB 當前頁面為準。</div>
   <div id="content" class="content" aria-live="polite"></div>
  </main>
 </div>
 <div class="footer">
- <p>參考資料：<a href="https://poedb.tw/us/Scarab" target="_blank" rel="noopener">PoEDB Scarab（英文）</a> · <a href="https://poedb.tw/tw/Scarab" target="_blank" rel="noopener">PoEDB Scarab（繁中）</a> · <a href="https://poedb.tw/us/atlas-skill-tree/" target="_blank" rel="noopener">PoEDB 3.30 Atlas Skill Tree</a></p>
- <p>翻譯原則：聖甲蟲名稱採用 PoEDB 繁中譯名；效果描述優先使用 PoEDB 繁中用詞；不確定或遊戲專有詞彙以「中文(英文)」並列。</p>
+ <p>參考資料：<a href="https://poedb.tw/tw/Scarab" target="_blank" rel="noopener">PoEDB Scarab（繁體中文 TW）</a> · <a href="https://poedb.tw/us/Scarab" target="_blank" rel="noopener">PoEDB Scarab（英文）</a> · <a href="https://poedb.tw/us/atlas-skill-tree/" target="_blank" rel="noopener">PoEDB 3.30 Atlas Skill Tree</a></p>
+ <p>翻譯原則：機制名稱與聖甲蟲變體優先採用 <code>poedb.tw/tw</code> 實際標題；無法確認時以「中文(英文)」並列，不以簡中譯名替代繁中譯名。</p>
 </div>
 <script>
 const data = [
@@ -175,21 +175,21 @@ fresh:[
 ["適應反應(Adaptive Reaction)","可燃蟲洞(Flammable Burrows)爆炸範圍 +100%；蜂巢怪物每摧毀一個蟲洞增加韌性；蜂巢遭遇增加蜂巢之血及母巢贈禮。"]],
 diff:[["額外裂痕","Instability 固定 +2","Massing Forces 10% 機率 +2","固定改機率"],["蜂巢／要塞","聖甲蟲指定蜂巢／要塞","要塞機率 +40%","改為機率"],["首領","Marshal 增加首領","首領有 25% 機率複製","用途不同"],["怪物群體","Incensed Swarm 強化後續波次","Swelling Ranks 群體規模 +10%","機制改變"],["裂痕速度","Resonant Cascade 加快","未確認相同替代","待核對"],["獎勵","波次難度與獎勵成長","蜂巢之血、母巢贈禮等","獎勵系統重製"]],
 note:"Fortified Dominance 與 Massing Forces 的數值已由 PoEWiki 確認。"},
-{id:"expedition",name:"先祖秘藏",en:"Expedition",icon:"⚒",summary:"3.30 先祖秘藏可針對圖真(Tujen)、丹尼格(Dannig)、羅格(Rog)、格溫妮(Gwennen)投資，也能調整炸藥數量、範圍與引爆節奏。",old:[
-["先祖秘藏聖甲蟲(Expedition Scarab)","地圖必定出現先祖秘藏。"],
-["覓符之先祖秘藏聖甲蟲(Expedition Scarab of Runefinding)","符文怪物印記(Runic Monster Marker)數量增加 100%。"],
-["維金之先祖秘藏聖甲蟲(Expedition Scarab of Verisium Powder)","炸藥數量增加 50%，爆炸範圍增加 80%。"],
-["灌注之先祖秘藏聖甲蟲(Expedition Scarab of Infusion)","先祖秘藏日誌(Logbook)必定有 4 個隱含詞綴；每引爆一個遺跡(Remnant)，怪物難度及獎勵增加。"],
-["考古之先祖秘藏聖甲蟲(Expedition Scarab of Archaeology)","遺跡額外增加 2 個前綴及後綴。"]],
+{id:"expedition",name:"探險",en:"Expedition",icon:"⚒",summary:"3.30 探險可針對圖真(Tujen)、丹尼格(Dannig)、羅格(Rog)、格溫妮(Gwennen)投資，也能調整炸藥數量、範圍與引爆節奏。台服譯名為「探險」，非簡中「先祖秘藏」[reference:18]。",old:[
+["探險聖甲蟲(Expedition Scarab)","地圖必定出現探險。"],
+["尋符探險聖甲蟲(Expedition Scarab of Runefinding)","符文怪物印記(Runic Monster Marker)數量增加 100%。"],
+["維里西姆粉末探險聖甲蟲(Expedition Scarab of Verisium Powder)","炸藥數量增加 50%，爆炸範圍增加 80%。"],
+["灌注探險聖甲蟲(Expedition Scarab of Infusion)","探險日誌(Logbook)必定有 4 個隱含詞綴；每引爆一個遺跡(Remnant)，怪物難度及獎勵增加。"],
+["考古探險聖甲蟲(Expedition Scarab of Archaeology)","遺跡額外增加 2 個前綴及後綴。"]],
 fresh:[
 ["極限考古(Extreme Archaeology)","炸藥數量變成 1；爆炸範圍大幅增加；怪物生成時額外失去生命；炸藥放置距離增加。"],
 ["傑出爆破手(Distinguished Demolitionist)","炸藥範圍 +35%；炸藥數量 +20%。"],
-["埋藏知識(Buried Knowledge)","先祖秘藏日誌掉落數量 +50%；符文怪物印記數量 +20%。"],
-["遠古銘文(Ancient Writings)","遺跡有 30% 機率額外增加一個後綴；先祖秘藏額外增加 2 個遺跡。"],
-["遠古腐朽(Ancient Decay)","先祖秘藏怪物生成時額外失去 20% 生命。"],
+["埋藏知識(Buried Knowledge)","探險日誌掉落數量 +50%；符文怪物印記數量 +20%。"],
+["遠古銘文(Ancient Writings)","遺跡有 30% 機率額外增加一個後綴；探險額外增加 2 個遺跡。"],
+["遠古腐朽(Ancient Decay)","探險怪物生成時額外失去 20% 生命。"],
 ["商人定向天賦","圖真 +90%、丹尼格 +65%、羅格 +90%、格溫妮 +90% 出現機率（依各自天賦）。"],
 ["其他投資","遺物數量 +4%；商人重置貨幣掉落數量 +5%；引爆鏈速度可提高或降低 25%。"]],
-diff:[["符文怪物印記","+100%","+20%","新版較低"],["炸藥數量","+50%","+20%（另有 Extreme Archaeology 改為 1 顆）","玩法改變"],["爆炸範圍","+80%","大幅增加（Extreme Archaeology）","新版上限較高"],["放置距離","無直接效果","增加","新增"],["遺跡","額外詞綴","30% 機率額外 +1 後綴，另 +2 遺跡","機制改變"],["先祖秘藏日誌","保證 4 隱含詞綴","掉落數量 +50%","品質轉數量"],["商人選擇","未提供相同定向控制","可提高指定商人出現率","新增定向投資"]],
+diff:[["符文怪物印記","+100%","+20%","新版較低"],["炸藥數量","+50%","+20%（另有 Extreme Archaeology 改為 1 顆）","玩法改變"],["爆炸範圍","+80%","大幅增加（Extreme Archaeology）","新版上限較高"],["放置距離","無直接效果","增加","新增"],["遺跡","額外詞綴","30% 機率額外 +1 後綴，另 +2 遺跡","機制改變"],["探險日誌","保證 4 隱含詞綴","掉落數量 +50%","品質轉數量"],["商人選擇","未提供相同定向控制","可提高指定商人出現率","新增定向投資"]],
 note:"Extreme Archaeology 在部分版本曾調整「怪物生成時失去生命」的細節，3.30 實際數值建議以遊戲內或當前 PoEDB 為準。炸藥數量變成 1，不能只看範圍增加就判定全面增強。"},
 {id:"legion",name:"軍團",en:"Legion",icon:"⚔",summary:"3.30 軍團強調無倒數計時的解凍流程、怪物額外獎勵、寶箱獎勵與碎片收益。",old:[
 ["軍團聖甲蟲(Legion Scarab)","額外增加 1 場軍團遭遇。"],
@@ -275,8 +275,8 @@ fresh:[
 ["黃色／紫色／藍色乾旱(Vivid／Wild／Primal Drought)","分別降低黃色／紫色／藍色植物出現機率 25%。"]],
 diff:[["豐收出現","保證出現","出現機率 +30%；不再有獨立果園","保證改機率 + 機制重製"],["生靈之力複製","直接複製","10% 機率複製","確定改機率"],["階級 4 種子","每種最多額外 +1","階級 4 機率 +60%","計算方式改變"],["額外豐收","無直接對應","50% 機率額外一次","新增"]],
 note:"Doubling 舊版是直接複製，3.30 的倍增時節(Doubling Season)為 10% 機率（已由 PoEWiki 確認）；需注意兩者收益期望值差異。"},
-{id:"strongbox",name:"保險箱",en:"Strongbox / Ambush",icon:"▣",summary:"3.30 保險箱投資轉向特定箱種及掉落複製；舊版的額外箱數、重開與詞綴強化未必有直接替代。",old:[
-["強襲聖甲蟲(Ambush Scarab)","額外增加 4 個保險箱(Strongboxes)。"],
+{id:"strongbox",name:"保險箱",en:"Strongbox / Ambush",icon:"▣",summary:"3.30 保險箱投資轉向特定箱種及掉落複製；舊版的額外箱數、重開與詞綴強化未必有直接替代。Ambush 在繁中頁面可見「強襲」與「伏擊」兩種寫法，本頁並列呈現[reference:19][reference:20]。",old:[
+["強襲聖甲蟲(Ambush Scarab)／伏擊聖甲蟲","額外增加 4 個保險箱(Strongboxes)。"],
 ["隱藏隔層之強襲聖甲蟲(Ambush Scarab of Hidden Compartments)","15% 機率可以重新開啟。"],
 ["效能之強襲聖甲蟲(Ambush Scarab of Potency)","保險箱詞綴效果 +75%。"],
 ["遏制之強襲聖甲蟲(Ambush Scarab of Containment)","大量額外保險箱，並讓地圖怪物埋伏。"],
@@ -305,7 +305,7 @@ diff:[["神殿數量","固定 +3","20% 機率額外增加","固定改機率"],["
 note:"融合(Syncretism)的 +30% 效果與隨機額外神殿效果已由 PoEDB / PoEWiki 確認；新舊版特殊神殿名稱與效果不同，不能視為同一種遭遇。"},
 {id:"exiles",name:"盜賊流亡者",en:"Rogue Exiles / Anarchy",icon:"⚑",summary:"3.30 盜賊流亡者可投資大量生成、額外通貨與獎勵；舊版則有盜賊巨人(Rogue Giant)及成對出現等特殊效果。",old:[
 ["混亂聖甲蟲(Anarchy Scarab)","額外增加 5 隻盜賊流亡者(Rogue Exiles)。"],
-["巨化之混亂聖甲蟲(Anarchy Scarab of Gigantification)","30% 機率將野生盜賊流亡者替換為盜賊巨人(Rogue Giant)。"],
+["浩瀚混亂聖甲蟲(Anarchy Scarab of Gigantification)","30% 機率將野生盜賊流亡者替換為盜賊巨人(Rogue Giant)。"],
 ["夥伴之混亂聖甲蟲(Anarchy Scarab of Partnership)","50% 機率讓野生盜賊流亡者成對出現。"],
 ["卓越之混亂聖甲蟲(Anarchy Scarab of the Exceptional)","額外增加 1 隻卓越盜賊流亡者(Exceptional Rogue Exile)。"]],
 fresh:[
@@ -376,7 +376,7 @@ function renderContent(){
  const d=data.find(x=>x.id===active); if(!d){content.innerHTML='<div class="empty">請選擇機制</div>';return;}
  content.innerHTML=`
  <div class="hero"><div class="hero-top"><div class="icon">${d.icon}</div><div><h2>${esc(d.name)}</h2><div class="en">${esc(d.en)}</div></div></div>
- <p class="summary">${esc(d.summary)}</p><div class="tags"><span class="tag">舊版 Scarab</span><span class="tag">3.30 Threads／Atlas</span><span class="tag warn">翻譯基準：PoEDB</span></div></div>
+ <p class="summary">${esc(d.summary)}</p><div class="tags"><span class="tag">舊版 Scarab</span><span class="tag">3.30 Threads／Atlas</span><span class="tag warn">翻譯基準：poedb.tw/tw</span></div></div>
  <section class="section"><h3>舊版聖甲蟲效果</h3>${table(d.old)}</section>
  <section class="section"><h3>3.30 機制／Threads／Atlas 方向</h3>${table(d.fresh)}</section>
  <section class="section"><h3>新舊差異對照</h3>${table(d.diff,"diff-table")}</section>
